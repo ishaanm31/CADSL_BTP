@@ -58,6 +58,7 @@
 #include "cpu/timebuf.hh"
 #include "debug/Activity.hh"
 #include "debug/Commit.hh"
+#include "debug/BranchOutcomes.hh"
 #include "debug/CommitRate.hh"
 #include "debug/Drain.hh"
 #include "debug/ExecFaulting.hh"
@@ -971,6 +972,16 @@ Commit::commitInsts()
             bool commit_success = commitHead(head_inst, num_committed);
 
             if (commit_success) {
+                if (head_inst->isControl())
+                {
+                    const PCStateBase &pc = head_inst->pcState();
+                    PCStateBase *pcs = pc.clone();
+                    auto &xpc = pcs->as<GenericISA::PCStateWithNext>();
+                    Addr currentPC = xpc.pc();
+                    Addr nextPC = xpc.npc();
+                    DPRINTF(BranchOutcomes, "Branch PC info: 0x%lx, Target Address: 0x%lx\n",
+                    currentPC, nextPC);
+                }
                 ++num_committed;
                 cpu->commitStats[tid]
                     ->committedInstType[head_inst->opClass()]++;

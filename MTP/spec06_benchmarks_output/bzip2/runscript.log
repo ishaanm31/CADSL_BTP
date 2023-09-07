@@ -18,10 +18,10 @@ gem5 Simulator System.  https://www.gem5.org
 gem5 is copyrighted software; use the --copyright option for details.
 
 gem5 version 23.0.0.1
-gem5 compiled Aug 20 2023 20:31:20
-gem5 started Aug 28 2023 14:58:55
-gem5 executing on MTP, pid 19584
-command line: /home/piyush/gem5/build/X86/gem5.opt --outdir=/home/piyush/gem5/MTP/spec06_benchmarks_output/bzip2 /home/piyush/gem5/MTP/se.py --maxinsts 10000000 --cpu-type=DerivO3CPU --cpu-clock 2GHz --caches --l2cache --mem-size 2GB --benchmark=bzip2 --benchmark_stdout=/home/piyush/gem5/MTP/spec06_benchmarks_output/bzip2/bzip2.out --benchmark_stderr=/home/piyush/gem5/MTP/spec06_benchmarks_output/bzip2/bzip2.err
+gem5 compiled Sep  7 2023 16:50:29
+gem5 started Sep  7 2023 16:54:56
+gem5 executing on MTP, pid 17378
+command line: /home/piyush/gem5/build/X86/gem5.opt --debug-flags=BranchOutcomes --debug-file=bzip2_branchtrace --outdir=/home/piyush/gem5/MTP/spec06_benchmarks_output/bzip2 /home/piyush/gem5/MTP/se.py --maxinsts 10000000 --cpu-type=DerivO3CPU --cpu-clock 2GHz --caches --l2cache --mem-size 2GB --benchmark=bzip2 --benchmark_stdout=/home/piyush/gem5/MTP/spec06_benchmarks_output/bzip2/bzip2.out --benchmark_stderr=/home/piyush/gem5/MTP/spec06_benchmarks_output/bzip2/bzip2.err
 
 Selected SPEC_CPU2006 benchmark
 --> bzip2
