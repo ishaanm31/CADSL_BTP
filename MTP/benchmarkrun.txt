@@ -1,0 +1,162 @@
+astar
+fastforward=389.6*500M=194800000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b astar -o ~/gem5/MTP/spec06_benchmarks_output/astar -f 194800000000 -w 200000000 -m 100000000 -c InO
+
+bzip2
+fastforward=108.6*500M=54300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b bzip2 -o ~/gem5/MTP/spec06_benchmarks_output/bzip2 -f 54300000000 -w 200000000 -m 100000000 -c InO
+./run_gem5_spec06_benchmark.sh -b bzip2 -o ~/gem5/MTP/spec06_benchmarks_output/bzip2 -f 54300000000 -w 200000000 -m 100000000 -c InO
+
+cactusADM
+fastforward=942.6*500M=471300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b cactusADM -o ~/gem5/MTP/spec06_benchmarks_output/cactusADM -f 471300000000 -w 200000000 -m 100000000 -c InO
+
+calculix
+fastforward=5636.6*500M=2818300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b calculix -o ~/gem5/MTP/spec06_benchmarks_output/calculix -f 2818300000000 -w 200000000 -m 100000000 -c InO
+
+gamess
+fastforward=248.6*500M=124300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b gamess -o ~/gem5/MTP/spec06_benchmarks_output/gamess -f 124300000000 -w 200000000 -m 100000000 -c InO
+
+gcc
+fastforward=197.6*500M=98800000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b gcc -o ~/gem5/MTP/spec06_benchmarks_output/gcc -f 98800000000 -w 200000000 -m 100000000 -c InO
+
+GemsFDTD
+fastforward=3282.6*500M=1641300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b GemsFDTD -o ~/gem5/MTP/spec06_benchmarks_output/GemsFDTD -f 1641300000000 -w 200000000 -m 100000000 -c InO
+
+gobmk
+fastforward=384.6*500M=192300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b gobmk -o ~/gem5/MTP/spec06_benchmarks_output/gobmk -f 192300000000 -w 200000000 -m 100000000 -c InO
+
+gromacs
+fastforward=1725.6*500M=862800000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b gromacs -o ~/gem5/MTP/spec06_benchmarks_output/gromacs -f 862800000000 -w 200000000 -m 100000000 -c InO
+
+h264ref
+fastforward=6022.6*500M=3011300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b h264ref -o ~/gem5/MTP/spec06_benchmarks_output/h264ref -f 3011300000000 -w 200000000 -m 100000000 -c InO
+
+*hmmer
+fastforward=28.6*500M=14300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b hmmer -o ~/gem5/MTP/spec06_benchmarks_output/hmmer -f 14300000000 -w 200000000 -m 100000000 -c InO
+
+lbm
+fastforward=176.6*500M=88300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b lbm -o ~/gem5/MTP/spec06_benchmarks_output/lbm -f 88300000000 -w 200000000 -m 100000000 -c InO
+
+leslie3d
+fastforward=8568.6*500M=4284300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b leslie3d -o ~/gem5/MTP/spec06_benchmarks_output/leslie3d -f 4284300000000 -w 200000000 -m 100000000 -c InO
+
+libquantum
+fastforward=2162.6*500M=1081300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b libquantum -o ~/gem5/MTP/spec06_benchmarks_output/libquantum -f 1081300000000 -w 200000000 -m 100000000 -c InO
+
+mcf
+fastforward=586.6*500M=293300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b mcf -o ~/gem5/MTP/spec06_benchmarks_output/mcf -f 293300000000 -w 200000000 -m 100000000 -c InO
+
+*milc
+fastforward=3.6*500M=1800000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b milc -o ~/gem5/MTP/spec06_benchmarks_output/milc -f 1800000000 -w 200000000 -m 100000000 -c InO
+
+namd
+fastforward=162.6*500M=81300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b namd -o ~/gem5/MTP/spec06_benchmarks_output/namd -f 81300000000 -w 200000000 -m 100000000 -c InO
+
+omnetpp
+fastforward=392.6*500M=196300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b omnetpp -o ~/gem5/MTP/spec06_benchmarks_output/omnetpp -f 196300000000 -w 200000000 -m 100000000 -c InO
+
+perlbench
+fastforward=891.6*500M=445800000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b perlbench -o ~/gem5/MTP/spec06_benchmarks_output/perlbench -f 445800000000 -w 200000000 -m 100000000 -c InO
+
+povray
+fastforward=726.6*500M=363300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b povray -o ~/gem5/MTP/spec06_benchmarks_output/povray -f 363300000000 -w 200000000 -m 100000000 -c InO
+
+sjeng
+fastforward=2793.6*500M=1396800000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b sjeng -o ~/gem5/MTP/spec06_benchmarks_output/sjeng -f 1396800000000 -w 200000000 -m 100000000 -c InO
+
+soplex
+fastforward=4814.6*500M=2407300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b soplex -o ~/gem5/MTP/spec06_benchmarks_output/soplex -f 2407300000000 -w 200000000 -m 100000000 -c InO
+
+*sphinx_livepretend
+fastforward=0.6*500M=300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b sphinx_livepretend -o ~/gem5/MTP/spec06_benchmarks_output/sphinx_livepretend -f 300000000 -w 200000000 -m 100000000 -c InO
+
+tonto
+fastforward=5801.6*500M=2900800000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b tonto -o ~/gem5/MTP/spec06_benchmarks_output/tonto -f 2900800000000 -w 200000000 -m 100000000 -c InO
+
+wrf
+fastforward=4105.6*500M=2052800000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b wrf -o ~/gem5/MTP/spec06_benchmarks_output/wrf -f 2052800000000 -w 200000000 -m 100000000 -c InO
+
+Xalan
+fastforward=235.6*500M=117800000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b Xalan -o ~/gem5/MTP/spec06_benchmarks_output/Xalan -f 117800000000 -w 200000000 -m 100000000 -c InO
+
+zeusmp
+fastforward=2702.6*500M=1351300000000
+warmup=200M=200000000
+maximum=100M=100000000
+./run_gem5_spec06_benchmark.sh -b zeusmp -o ~/gem5/MTP/spec06_benchmarks_output/zeusmp -f 1351300000000 -w 200000000 -m 100000000 -c InO
