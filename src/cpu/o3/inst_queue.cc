@@ -53,6 +53,11 @@
 #include "params/BaseO3CPU.hh"
 #include "sim/core.hh"
 
+<<<<<<< HEAD
+#define issue_in_program_order true
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 // clang complains about std::set being overloaded with Packet::set if
 // we open up the entire namespace std
 using std::list;
@@ -738,6 +743,50 @@ InstructionQueue::processFUCompletion(const DynInstPtr &inst, int fu_idx)
     if (fu_idx > -1)
         fuPool->freeUnitNextCycle(fu_idx);
 
+<<<<<<< HEAD
+    ThreadID tid = inst->threadNumber;
+
+    if(issue_in_program_order) {
+        if(rob->scheduleinstList[tid].empty()) {
+            DPRINTF(IQ, "Schedule Instruction List is empty. Returning.\n");
+            return;
+        }
+
+        ROB::ScheduleInstListEntry scheduleInstListEntry;
+        scheduleInstListEntry = rob->readHeadInstSchedule(tid);
+
+        DPRINTF(IQ, "FU Completion-PC of Instruction %s, [sn:%llu].\n",
+                (inst->pcState()),
+                (inst->seqNum));
+        DPRINTF(IQ, "FU Completion-PC of Instruction %#x, [sn:%llu] "
+                    "at the top of the schedule instructions list.\n",
+                (scheduleInstListEntry.instPC),
+                (scheduleInstListEntry.seqNum));
+
+        // Ideally, only PC should be compared to schedule oldest instruction but for X86,
+        // one instruction is broken into micro-ops which have same PC and micro-ops may be scheduled OoO
+        // if only PC is compared hence need to compare sequence numbers as well for inorder issue
+        // @Todo How to issue for OoO schedule
+        if(scheduleInstListEntry.instPC == inst->pcState().instAddr() &&
+            scheduleInstListEntry.seqNum == inst->seqNum) {
+            assert(scheduleInstListEntry.seqNum == inst->seqNum);
+            DPRINTF(IQ, "FU Completion-PC of Instruction that must be executed %s, [sn:%llu] "
+                    "is at the top of the ready instructions list.\n",
+                (inst->pcState()),
+                (inst->seqNum));
+            rob->retireHeadInstSchedule(tid);
+        }
+        else {
+            // Add the current instruction to readyInsts list if it has been removed in given event execution time
+            addIfReady(inst);
+            DPRINTF(IQ, "FU Completion-Instruction that must be executed is not at the top "
+                    "of the ready instructions list, skipping remaining instructions in the issue slot.\n");
+            return;
+        }
+    }
+    
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     // @todo: Ensure that these FU Completions happen at the beginning
     // of a cycle, otherwise they could add too many instructions to
     // the queue.
@@ -745,6 +794,15 @@ InstructionQueue::processFUCompletion(const DynInstPtr &inst, int fu_idx)
     instsToExecute.push_back(inst);
 }
 
+<<<<<<< HEAD
+void
+InstructionQueue::setROB(ROB *rob_ptr)
+{
+    rob = rob_ptr;
+}
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 // @todo: Figure out a better way to remove the squashed items from the
 // lists.  Checking the top item of each list to see if it's squashed
 // wastes time and forces jumps.
@@ -785,6 +843,15 @@ InstructionQueue::scheduleReadyInsts()
 
         DynInstPtr issuing_inst = readyInsts[op_class].top();
 
+<<<<<<< HEAD
+        DPRINTF(IQ, "PC of Instruction %s, [sn:%llu] [opclass:%d]"
+                "at the top of the ready instructions list.\n",
+            (issuing_inst->pcState()),
+            (issuing_inst->seqNum),
+            op_class);
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
         if (issuing_inst->isFloating()) {
             iqIOStats.fpInstQueueReads++;
         } else if (issuing_inst->isVector()) {
@@ -834,6 +901,53 @@ InstructionQueue::scheduleReadyInsts()
         // valid FU, then schedule for execution.
         if (idx != FUPool::NoFreeFU) {
             if (op_latency == Cycles(1)) {
+<<<<<<< HEAD
+                DPRINTF(IQ, "Instruction has op_latency = 1.\n");
+
+                if(issue_in_program_order) {
+                    if(rob->scheduleinstList[tid].empty()) {
+                        DPRINTF(IQ, "Schedule Instruction List is empty. Breaking.\n");
+
+                        // Add the FU onto the list of FU's to be freed next
+                        // cycle if we were assigned or used one.
+                        if (idx >= 0){
+                            DPRINTF(IQ, "Freeing FU next cycle.\n");
+                            fuPool->freeUnitNextCycle(idx);
+                        }
+                        break;
+                    }
+
+                    ROB::ScheduleInstListEntry scheduleInstListEntry;
+                    scheduleInstListEntry = rob->readHeadInstSchedule(tid);
+
+                    // Ideally, only PC should be compared to schedule oldest instruction but for X86,
+                    // one instruction is broken into micro-ops which have same PC and micro-ops may be scheduled OoO
+                    // if only PC is compared hence need to compare sequence numbers as well for inorder issue
+                    // @Todo How to issue for OoO schedule
+                    if(scheduleInstListEntry.instPC == issuing_inst->pcState().instAddr() &&
+                        scheduleInstListEntry.seqNum == issuing_inst->seqNum) {
+                        assert(scheduleInstListEntry.seqNum == issuing_inst->seqNum);
+                        DPRINTF(IQ, "PC of Instruction that must be executed %s, [sn:%llu] "
+                                "is at the top of the ready instructions list.\n",
+                            (issuing_inst->pcState()),
+                            (issuing_inst->seqNum));
+                        rob->retireHeadInstSchedule(tid);
+                    }
+                    else {
+                        DPRINTF(IQ, "Instruction that must be executed is not at the top "
+                                "of the ready instructions list, skipping remaining instructions in the issue slot.\n");
+
+                        // Add the FU onto the list of FU's to be freed next
+                        // cycle if we were assigned or used one.
+                        if (idx >= 0){
+                            DPRINTF(IQ, "Freeing FU next cycle.\n");
+                            fuPool->freeUnitNextCycle(idx);
+                        }
+                        break;
+                    }
+                }
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
                 i2e_info->size++;
                 instsToExecute.push_back(issuing_inst);
 
@@ -842,6 +956,10 @@ InstructionQueue::scheduleReadyInsts()
                 if (idx >= 0)
                     fuPool->freeUnitNextCycle(idx);
             } else {
+<<<<<<< HEAD
+                DPRINTF(IQ, "Instruction needs pipelined ALU.\n");
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
                 bool pipelined = fuPool->isPipelined(op_class);
                 // Generate completion event for the FU
                 ++wbOutstanding;
@@ -898,6 +1016,10 @@ InstructionQueue::scheduleReadyInsts()
             listOrder.erase(order_it++);
             iqStats.statIssuedInstType[tid][op_class]++;
         } else {
+<<<<<<< HEAD
+            DPRINTF(IQ, "FU Busy.\n");
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
             iqStats.statFuBusy[op_class]++;
             iqStats.fuBusy[tid]++;
             ++order_it;

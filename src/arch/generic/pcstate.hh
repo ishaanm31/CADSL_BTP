@@ -92,6 +92,8 @@ class PCStateBase : public Serializable
 
     virtual void output(std::ostream &os) const = 0;
 
+    virtual void input(std::istringstream &is) = 0;
+
     virtual bool
     equals(const PCStateBase &other) const
     {
@@ -149,6 +151,15 @@ operator<<(std::ostream & os, const PCStateBase &pc)
 {
     pc.output(os);
     return os;
+}
+/**
+ * Overloaded operator >> to extract data from a std::istringstream into an object of type PCStateBase.
+ * The input function is then called on the pc object to handle the extraction.
+*/
+static inline void
+operator>>(std::istringstream & is, PCStateBase &pc)
+{
+    pc.input(is);
 }
 
 static inline bool
@@ -289,7 +300,23 @@ class PCStateWithNext : public PCStateBase
     void
     output(std::ostream &os) const override
     {
-        ccprintf(os, "(%#x=>%#x)", this->pc(), this->npc());
+        // ccprintf(os, "(%#x=>%#x)", this->pc(), this->npc());
+        ccprintf(os, "%#x: %#x", this->pc(), this->npc());
+    }
+    /**
+     * Parse data from the std::istringstream stream is as hexadecimal and set the values of pc and npc
+     * using the extracted values of inst_pc and branch_target
+    */
+    void
+    input(std::istringstream &is) override
+    {
+        Addr inst_pc, branch_target;
+        // std::istringstream iss(is);
+        if (is >> std::hex >> inst_pc >> branch_target)
+        {
+            this->pc(inst_pc);
+            this->npc(branch_target);
+        }
     }
 
     void
@@ -392,7 +419,13 @@ class UPCState : public SimplePCState<InstWidth>
     output(std::ostream &os) const override
     {
         Base::output(os);
-        ccprintf(os, ".(%d=>%d)", this->upc(), this->nupc());
+        // ccprintf(os, ".(%d=>%d)", this->upc(), this->nupc());
+    }
+
+    void
+    input(std::istringstream &is) override
+    {
+        Base::input(is);
     }
 
     PCStateBase *
@@ -453,6 +486,12 @@ class DelaySlotPCState : public SimplePCState<InstWidth>
     output(std::ostream &os) const override
     {
         ccprintf(os, "(%#x=>%#x=>%#x)", this->pc(), this->npc(), nnpc());
+    }
+
+    void
+    input(std::istringstream &is) override
+    {
+        Base::input(is);
     }
 
     PCStateBase *
@@ -537,7 +576,13 @@ class DelaySlotUPCState : public DelaySlotPCState<InstWidth>
     output(std::ostream &os) const override
     {
         Base::output(os);
-        ccprintf(os, ".(%d=>%d)", this->upc(), this->nupc());
+        // ccprintf(os, ".(%d=>%d)", this->upc(), this->nupc());
+    }
+
+    void
+    input(std::istringstream &is) override
+    {
+        Base::input(is);
     }
 
     PCStateBase *

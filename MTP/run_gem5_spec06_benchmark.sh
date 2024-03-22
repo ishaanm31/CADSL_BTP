@@ -1,4 +1,37 @@
 #!/bin/bash
+<<<<<<< HEAD
+start=$(date +%s)
+SECONDS=0
+#
+# run_gem5_spec06_benchmark.sh 
+ 
+while getopts ":b:o:f:w:m:c:-:" flag
+do
+	case "${flag}" in
+		b) BENCHMARK=${OPTARG};;    # Benchmark name, e.g. bzip2
+		o) OUTPUT_DIR=${OPTARG};;   # Directory to place run output. Make sure this exists!
+		f) fastforwardinsts=${OPTARG};;
+		w) warmupinsts=${OPTARG};;
+		m) maximuminsts=${OPTARG};;
+        c) CPU_TYPE=${OPTARG};;
+        -)
+            case "${OPTARG}" in
+                recordbranchoutcomes) RecordBranchOutcomes=true;;
+                *)
+                    echo "Invalid option: --${OPTARG}"
+                    exit 1
+                    ;;
+            esac
+            ;;
+        *)
+            echo "Invalid option: -${flag}"
+            exit 1
+            ;;
+	esac
+done
+
+ISA=X86                          # name of ISA (ARM,X86)
+=======
 #
 # run_gem5_spec06_benchmark.sh 
  
@@ -17,6 +50,7 @@ fi
 ISA=$1                          # name of ISA (ARM,X86)
 BENCHMARK=$2                    # Benchmark name, e.g. bzip2
 OUTPUT_DIR=$3                   # Directory to place run output. Make sure this exists!
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
 ISA_lower=$(echo "$ISA" | tr '[:upper:]' '[:lower:]')
 ############ DIRECTORY VARIABLES: MODIFY ACCORDINGLY #############
@@ -168,8 +202,14 @@ fi
 ##################################################################
 
 # Create OUTPUT_DIR
+<<<<<<< HEAD
+OUTPUT_DIR+="/"$CPU_TYPE
+mkdir -p $OUTPUT_DIR || echo "$OUTPUT_DIR already exists!"
+# echo $OUTPUT_DIR
+=======
 mkdir -p $OUTPUT_DIR || echo "$OUTPUT_DIR already exists!"
 
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 # Check OUTPUT_DIR existence
 if [[ !(-d "$OUTPUT_DIR") ]]; then
     echo "Output directory $OUTPUT_DIR does not exist! Exiting."
@@ -210,6 +250,68 @@ echo "--------- Here goes nothing! Starting gem5! ------------" | tee -a $SCRIPT
 echo "" | tee -a $SCRIPT_OUT
 echo "" | tee -a $SCRIPT_OUT
 
+<<<<<<< HEAD
+# fastforwardinsts=1000000
+# warmupinsts=2000000
+# maximuminsts=1000000
+memsize=4GB
+cpuclock=3GHz
+l1isize=32kB
+l1iassoc=4
+l1dsize=32kB
+l1dassoc=4
+
+if [[ "$CPU_TYPE" == "OoO" ]]; then
+    cputype=DerivO3CPU
+elif [[ "$CPU_TYPE" == "OoOasInO" ]]; then
+    cputype=DerivO3CPU
+elif [[ "$CPU_TYPE" == "InO" ]]; then
+    cputype=X86MinorCPU
+else
+    echo "Unsupported CPU Type $CPU_TYPE"
+fi
+echo $cputype
+# Actually launch gem5!
+if [ -n "$fastforwardinsts" ] && [ -n "$warmupinsts" ]; then
+    echo "Simpoints"
+    $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=BranchOutcomes --debug-file=${BENCHMARK}_branchtrace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --fast-forward $fastforwardinsts --standard-switch $warmupinsts --warmup-insts $warmupinsts --maxinsts $maximuminsts --cpu-type=$cputype --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
+else
+    echo "No Simpoints"
+    # $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=BranchOutcomes --debug-file=${BENCHMARK}_branchtrace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximuminsts --cpu-type=DerivO3CPU --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
+    # $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=O3CPUAll --debug-file=${BENCHMARK}_O3CPUAlltraceInOaftersquashing --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximuminsts --cpu-type=DerivO3CPU --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
+    $GEM5_DIR/build/"$ISA"/gem5.opt --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximuminsts --cpu-type=$cputype --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
+fi
+
+if [ -n "$RecordBranchOutcomes" ]; then
+    echo "Extracting trace"
+    # Output file to store extracted values
+    output_file="$OUTPUT_DIR/${BENCHMARK}_branchoutcomes.txt"
+
+    # Ensure the output file is empty initially
+    > "$output_file"
+
+    # Loop through each line in the input file
+    while IFS= read -r line; do
+        # Use grep and sed to extract the values and store them in variables
+        # branch_pc=$(echo "$line" | grep -o '0x[0-9a-fA-F]\+,' | sed 's/,//')
+        # target_address=$(echo "$line" | grep -o '0x[0-9a-fA-F]\+$')
+
+        branch_pc=$(echo "$line" | awk -F ': ' '{print $3}')
+        target_address=$(echo "$line" | awk -F ': ' '{print $4}')
+        branch_direction=$(echo "$line" | awk -F ': ' '{print $5}')
+
+        # Append the extracted values to the output file
+        echo "$branch_pc $target_address $branch_direction" >> "$output_file"
+    done < $OUTPUT_DIR/${BENCHMARK}_branchtrace
+else
+    echo "Not Extracting trace"
+fi
+
+end=$(date +%s)
+# echo "Elapsed Time: $(($end - $start)) seconds" > $OUTPUT_DIR/time_elapsed
+duration=$SECONDS
+echo "$(($duration / 3600)) hours, $(($duration / 60)) minutes and $(($duration % 60)) seconds" > $OUTPUT_DIR/time_elapsed
+=======
 # maxinsts=1000000
 # fastforwardinsts=10000
 # warmupinsts=20000
@@ -223,3 +325,4 @@ cpuclock=2GHz
 # Actually launch gem5!
 # $GEM5_DIR/build/"$ISA"/gem5.opt --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --fast-forward $fastforwardinsts --standard-switch $warmupinsts --warmup-insts $warmupinsts --maxinsts $maximum_insts --cpu-type=DerivO3CPU --cpu-clock $cpuclock --caches --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
 $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=BranchOutcomes --debug-file=${BENCHMARK}_branchtrace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximum_insts --cpu-type=DerivO3CPU --cpu-clock $cpuclock --caches --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7

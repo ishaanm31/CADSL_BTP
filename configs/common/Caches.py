@@ -50,11 +50,10 @@ from gem5.runtime import get_runtime_isa
 
 
 class L1Cache(Cache):
-    assoc = 2
-    tag_latency = 2
-    data_latency = 2
-    response_latency = 2
-    mshrs = 4
+    tag_latency = 3
+    data_latency = 3
+    response_latency = 3
+    mshrs = 32
     tgts_per_mshr = 20
 
 

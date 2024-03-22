@@ -62,3 +62,19 @@ class DefaultFUPool(FUPool):
         RdWrPort(),
         IprPort(),
     ]
+<<<<<<< HEAD
+
+# Added a custom FU Pool same as Minor CPU's FU Pool
+class CustomFUPool(FUPool):
+    FUList = [
+        CustomIntALU(),
+        CustomIntMult(),
+        CustomIntDiv(),
+        CustomFP_SIMD(),
+        CustomPredALU(),
+        CustomRdWrPort(),
+        CustomMiscALU(),
+        CustomVecALU(),
+    ]
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7

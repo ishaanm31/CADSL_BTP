@@ -434,8 +434,17 @@ class BaseMinorCPU(BaseCPU):
         True, "Enable cycle skipping when the processor is idle\n"
     )
 
+<<<<<<< HEAD
+    # branchPred = Param.BranchPredictor(
+    #     TournamentBP(numThreads=Parent.numThreads), "Branch Predictor"
+    # )
+    # TAGE SC L as Branch Predictor
+    branchPred = Param.BranchPredictor(
+        TAGE_SC_L_8KB(), "Branch Predictor"
+=======
     branchPred = Param.BranchPredictor(
         TournamentBP(numThreads=Parent.numThreads), "Branch Predictor"
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     )
 
     def addCheckerCpu(self):

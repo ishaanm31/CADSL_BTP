@@ -58,7 +58,13 @@ class SMTQueuePolicy(ScopedEnum):
 class CommitPolicy(ScopedEnum):
     vals = ["RoundRobin", "OldestReady"]
 
+<<<<<<< HEAD
+# Modified the fetch/decode/issue/commit width to 2 same as MinorCPU
+# Added a Custom FU Pool
+# Kept IQ, LQ, SQ and ROB size same as pipeline depth of 7
+=======
 
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 class BaseO3CPU(BaseCPU):
     type = "BaseO3CPU"
     cxx_class = "gem5::o3::CPU"
@@ -87,10 +93,17 @@ class BaseO3CPU(BaseCPU):
     renameToFetchDelay = Param.Cycles(1, "Rename to fetch delay")
     iewToFetchDelay = Param.Cycles(1, "Issue/Execute/Writeback to fetch delay")
     commitToFetchDelay = Param.Cycles(1, "Commit to fetch delay")
+<<<<<<< HEAD
+    fetchWidth = Param.Unsigned(2, "Fetch width")
+    fetchBufferSize = Param.Unsigned(64, "Fetch buffer size in bytes")
+    fetchQueueSize = Param.Unsigned(
+        2, "Fetch queue size in micro-ops per-thread"
+=======
     fetchWidth = Param.Unsigned(8, "Fetch width")
     fetchBufferSize = Param.Unsigned(64, "Fetch buffer size in bytes")
     fetchQueueSize = Param.Unsigned(
         32, "Fetch queue size in micro-ops per-thread"
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     )
 
     renameToDecodeDelay = Param.Cycles(1, "Rename to decode delay")
@@ -99,14 +112,22 @@ class BaseO3CPU(BaseCPU):
     )
     commitToDecodeDelay = Param.Cycles(1, "Commit to decode delay")
     fetchToDecodeDelay = Param.Cycles(1, "Fetch to decode delay")
+<<<<<<< HEAD
+    decodeWidth = Param.Unsigned(2, "Decode width")
+=======
     decodeWidth = Param.Unsigned(8, "Decode width")
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
     iewToRenameDelay = Param.Cycles(
         1, "Issue/Execute/Writeback to rename delay"
     )
     commitToRenameDelay = Param.Cycles(1, "Commit to rename delay")
     decodeToRenameDelay = Param.Cycles(1, "Decode to rename delay")
+<<<<<<< HEAD
+    renameWidth = Param.Unsigned(2, "Rename width")
+=======
     renameWidth = Param.Unsigned(8, "Rename width")
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
     commitToIEWDelay = Param.Cycles(
         1, "Commit to Issue/Execute/Writeback delay"
@@ -117,17 +138,29 @@ class BaseO3CPU(BaseCPU):
     issueToExecuteDelay = Param.Cycles(
         1, "Issue to execute delay (internal to the IEW stage)"
     )
+<<<<<<< HEAD
+    dispatchWidth = Param.Unsigned(2, "Dispatch width")
+    issueWidth = Param.Unsigned(2, "Issue width")
+    wbWidth = Param.Unsigned(2, "Writeback width")
+    fuPool = Param.FUPool(CustomFUPool(), "Functional Unit pool")
+=======
     dispatchWidth = Param.Unsigned(8, "Dispatch width")
     issueWidth = Param.Unsigned(8, "Issue width")
     wbWidth = Param.Unsigned(8, "Writeback width")
     fuPool = Param.FUPool(DefaultFUPool(), "Functional Unit pool")
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
     iewToCommitDelay = Param.Cycles(
         1, "Issue/Execute/Writeback to commit delay"
     )
     renameToROBDelay = Param.Cycles(1, "Rename to reorder buffer delay")
+<<<<<<< HEAD
+    commitWidth = Param.Unsigned(2, "Commit width")
+    squashWidth = Param.Unsigned(2, "Squash width")
+=======
     commitWidth = Param.Unsigned(8, "Commit width")
     squashWidth = Param.Unsigned(8, "Squash width")
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     trapLatency = Param.Cycles(13, "Trap latency")
     fetchTrapLatency = Param.Cycles(1, "Fetch trap latency")
 
@@ -138,8 +171,13 @@ class BaseO3CPU(BaseCPU):
         5, "Time buffer size for forward communication"
     )
 
+<<<<<<< HEAD
+    LQEntries = Param.Unsigned(7, "Number of load queue entries")
+    SQEntries = Param.Unsigned(7, "Number of store queue entries")
+=======
     LQEntries = Param.Unsigned(32, "Number of load queue entries")
     SQEntries = Param.Unsigned(32, "Number of store queue entries")
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     LSQDepCheckShift = Param.Unsigned(
         4, "Number of places to shift addr before check"
     )
@@ -159,10 +197,17 @@ class BaseO3CPU(BaseCPU):
     numRobs = Param.Unsigned(1, "Number of Reorder Buffers")
 
     numPhysIntRegs = Param.Unsigned(
+<<<<<<< HEAD
+        128, "Number of physical integer registers"
+    )
+    numPhysFloatRegs = Param.Unsigned(
+        128, "Number of physical floating point registers"
+=======
         256, "Number of physical integer registers"
     )
     numPhysFloatRegs = Param.Unsigned(
         256, "Number of physical floating point registers"
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     )
     numPhysVecRegs = Param.Unsigned(256, "Number of physical vector registers")
     numPhysVecPredRegs = Param.Unsigned(
@@ -171,8 +216,13 @@ class BaseO3CPU(BaseCPU):
     numPhysMatRegs = Param.Unsigned(2, "Number of physical matrix registers")
     # most ISAs don't use condition-code regs, so default is 0
     numPhysCCRegs = Param.Unsigned(0, "Number of physical cc registers")
+<<<<<<< HEAD
+    numIQEntries = Param.Unsigned(7, "Number of instruction queue entries")
+    numROBEntries = Param.Unsigned(7, "Number of reorder buffer entries")
+=======
     numIQEntries = Param.Unsigned(64, "Number of instruction queue entries")
     numROBEntries = Param.Unsigned(192, "Number of reorder buffer entries")
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
     smtNumFetchingThreads = Param.Unsigned(1, "SMT Number of Fetching Threads")
     smtFetchPolicy = Param.SMTFetchPolicy("RoundRobin", "SMT Fetch policy")
@@ -188,7 +238,16 @@ class BaseO3CPU(BaseCPU):
     smtROBThreshold = Param.Int(100, "SMT ROB Threshold Sharing Parameter")
     smtCommitPolicy = Param.CommitPolicy("RoundRobin", "SMT Commit Policy")
 
+<<<<<<< HEAD
+    # branchPred = Param.BranchPredictor(
+    #     TournamentBP(numThreads=Parent.numThreads), "Branch Predictor"
+    # )
+    # TAGE SC L as Branch Predictor
+    branchPred = Param.BranchPredictor(
+        TAGE_SC_L_8KB(), "Branch Predictor"
+=======
     branchPred = Param.BranchPredictor(
         TournamentBP(numThreads=Parent.numThreads), "Branch Predictor"
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     )
     needsTSO = Param.Bool(False, "Enable TSO Memory model")

@@ -48,6 +48,10 @@
 #include "debug/Fetch.hh"
 #include "debug/ROB.hh"
 #include "params/BaseO3CPU.hh"
+<<<<<<< HEAD
+#define issue_inscheduleorder true
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
 namespace gem5
 {
@@ -106,6 +110,15 @@ ROB::resetState()
     for (ThreadID tid = 0; tid  < MaxThreads; tid++) {
         threadEntries[tid] = 0;
         squashIt[tid] = instList[tid].end();
+<<<<<<< HEAD
+        if(issue_inscheduleorder) {
+            scheduleinstsquashIt[tid] = scheduleinstList[tid].end();
+            doneScheduleInstListSquashing[tid] = true;
+            // Below flag is set to true only when we have squashed head of scheduleinstList
+            doneScheduleInstListHeadSquashing[tid] = false;
+        }
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
         squashedSeqNum[tid] = 0;
         doneSquashing[tid] = true;
     }
@@ -208,6 +221,17 @@ ROB::insertInst(const DynInstPtr &inst)
 
     instList[tid].push_back(inst);
 
+<<<<<<< HEAD
+    // Add instruction's PC and its sequence number in scheduleinstList at the same time as ROB
+    if(issue_inscheduleorder){
+        ScheduleInstListEntry scheduleInstListEntry;
+        scheduleInstListEntry.instPC = inst->pcState().instAddr();
+        scheduleInstListEntry.seqNum = inst->seqNum;
+        scheduleinstList[tid].push_back(scheduleInstListEntry);
+    }
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     //Set Up head iterator if this is the 1st instruction in the ROB
     if (numInstsInROB == 0) {
         head = instList[tid].begin();
@@ -314,6 +338,22 @@ ROB::doSquash(ThreadID tid)
 
     assert(squashIt[tid] != instList[tid].end());
 
+<<<<<<< HEAD
+    // Same logic as squashing in ROB. No extra case handling needed.
+    if(issue_inscheduleorder && !scheduleinstList[tid].empty()) {
+        assert(scheduleinstsquashIt[tid] != scheduleinstList[tid].end());
+
+        if((scheduleinstsquashIt[tid])->seqNum < squashedSeqNum[tid]) {
+            DPRINTF(ROB, "[tid:%i] Done squashing instructions from schedule instruction list 1.\n",
+                tid);
+
+            scheduleinstsquashIt[tid] = scheduleinstList[tid].end();
+            doneScheduleInstListSquashing[tid] = true;
+        }
+    }
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     if ((*squashIt[tid])->seqNum < squashedSeqNum[tid]) {
         DPRINTF(ROB, "[tid:%i] Done squashing instructions.\n",
                 tid);
@@ -351,6 +391,37 @@ ROB::doSquash(ThreadID tid)
         // it can drain out of the pipeline.
         (*squashIt[tid])->setSquashed();
 
+<<<<<<< HEAD
+        if(issue_inscheduleorder && !scheduleinstList[tid].empty()) {
+            if (scheduleinstsquashIt[tid] == scheduleinstList[tid].begin()) {
+                DPRINTF(ROB, "Reached head of schedule instruction list while "
+                    "squashing.\n");
+
+                // Squashing head of instruction list if it is in the mispredicted path of instructions
+                // and its sequence number is greater than the sequence number of mispredicted branch instruction.
+                if (scheduleinstsquashIt[tid]->seqNum > squashedSeqNum[tid] &&
+                    !doneScheduleInstListHeadSquashing[tid]) {
+                    DPRINTF(ROB, "Squashing head of schedule instruction list as well.\n");
+                    // Set to true only once when we need to squash head of scheduleinstList
+                    doneScheduleInstListHeadSquashing[tid] = true;
+                    scheduleinstList[tid].erase(scheduleinstsquashIt[tid]);
+                }
+
+                scheduleinstsquashIt[tid] = scheduleinstList[tid].end();
+                
+                doneScheduleInstListSquashing[tid] = true;
+            }
+            // Entries are removed from scheduleinstList when they need to be squashed (wrong path)
+            // and in retireHeadInstSchedule function
+            if(!doneScheduleInstListSquashing[tid]) {
+                DPRINTF(ROB, "Squashing instruction list PC %#x, seq num %i.\n",
+                    (scheduleinstsquashIt[tid]->instPC),
+                    (scheduleinstsquashIt[tid]->seqNum));
+                scheduleinstList[tid].erase(scheduleinstsquashIt[tid]);
+            }
+        }
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
         (*squashIt[tid])->setCanCommit();
 
 
@@ -372,9 +443,28 @@ ROB::doSquash(ThreadID tid)
             robTailUpdate = true;
 
         squashIt[tid]--;
+<<<<<<< HEAD
+        if(issue_inscheduleorder && !scheduleinstList[tid].empty()) scheduleinstsquashIt[tid]--;
     }
 
 
+    // Same logic as squashing in ROB. No extra case handling needed.
+    if(issue_inscheduleorder && !scheduleinstList[tid].empty()) {
+        if((scheduleinstsquashIt[tid])->seqNum <= squashedSeqNum[tid]) {
+            DPRINTF(ROB, "[tid:%i] Done squashing instructions from schedule instruction list 2.\n",
+                tid);
+
+            scheduleinstsquashIt[tid] = scheduleinstList[tid].end();
+
+            doneScheduleInstListSquashing[tid] = true;
+        }
+    }
+
+=======
+    }
+
+
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     // Check if ROB is done squashing.
     if ((*squashIt[tid])->seqNum <= squashedSeqNum[tid]) {
         DPRINTF(ROB, "[tid:%i] Done squashing instructions.\n",
@@ -486,6 +576,14 @@ ROB::squash(InstSeqNum squash_num, ThreadID tid)
 
     doneSquashing[tid] = false;
 
+<<<<<<< HEAD
+    if(issue_inscheduleorder) {
+        doneScheduleInstListSquashing[tid] = false;
+        doneScheduleInstListHeadSquashing[tid] = false;
+    }
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     squashedSeqNum[tid] = squash_num;
 
     if (!instList[tid].empty()) {
@@ -494,6 +592,20 @@ ROB::squash(InstSeqNum squash_num, ThreadID tid)
 
         squashIt[tid] = tail_thread;
 
+<<<<<<< HEAD
+        if(issue_inscheduleorder) {
+            if(scheduleinstList[tid].empty())
+                DPRINTF(ROB, "Schedule Instruction List is empty. No need to squash.\n");
+            else {
+                ScheduleInstIt scheduleList_tail_thread = scheduleinstList[tid].end();
+                scheduleList_tail_thread--;
+
+                scheduleinstsquashIt[tid] = scheduleList_tail_thread;
+            }
+        }
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
         doSquash(tid);
     }
 }
@@ -541,5 +653,37 @@ ROB::findInst(ThreadID tid, InstSeqNum squash_inst)
     return NULL;
 }
 
+<<<<<<< HEAD
+/** Returns a pointer to the head instruction of a specific thread within
+ *  schedule instruction list.
+*/
+const ROB::ScheduleInstListEntry&
+ROB::readHeadInstSchedule(ThreadID tid)
+{
+    assert(!scheduleinstList[tid].empty());
+    ScheduleInstIt head_inst = scheduleinstList[tid].begin();
+
+    DPRINTF(ROB, "PC of Instruction that must be executed %#x, [sn:%llu].\n",
+            (head_inst->instPC),
+            (head_inst->seqNum));
+    return *head_inst;
+}
+
+/** Retires the head instruction of a specific thread, removing it from the
+ *  schedule instruction list.
+ */
+void
+ROB::retireHeadInstSchedule(ThreadID tid)
+{
+    assert(!scheduleinstList[tid].empty());
+    ScheduleInstListEntry head_inst = std::move(scheduleinstList[tid].front());
+    DPRINTF(ROB, "[tid:%i] Retiring head instruction from schedule instruction list, "
+            "instruction PC %#x, [sn:%llu]\n", tid, head_inst.instPC,
+            head_inst.seqNum);
+    scheduleinstList[tid].pop_front();
+}
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 } // namespace o3
 } // namespace gem5

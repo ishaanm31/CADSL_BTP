@@ -139,3 +139,123 @@ class RdWrPort(FUDesc):
 class IprPort(FUDesc):
     opList = [OpDesc(opClass="IprAccess", opLat=3, pipelined=False)]
     count = 1
+<<<<<<< HEAD
+
+
+# Added custom FUs with count and latency same as MinorCPU model
+class CustomIntALU(FUDesc):
+    opList = [OpDesc(opClass="IntAlu", opLat=3)]
+    count = 2
+
+
+class CustomIntMult(FUDesc):
+    opList = [OpDesc(opClass="IntMult", opLat=3)]
+    count = 1
+
+
+class CustomIntDiv(FUDesc):
+    opList = [OpDesc(opClass="IntDiv", opLat=9, pipelined=False)]
+    count = 1
+
+
+class CustomFP_SIMD(FUDesc):
+    opList = [
+        OpDesc(opClass="FloatAdd", opLat=6),
+        OpDesc(opClass="FloatCmp", opLat=6),
+        OpDesc(opClass="FloatCvt", opLat=6),
+        OpDesc(opClass="FloatMult", opLat=6),
+        OpDesc(opClass="FloatMultAcc", opLat=6),
+        OpDesc(opClass="FloatMisc", opLat=6),
+        OpDesc(opClass="FloatDiv", opLat=6, pipelined=False),
+        OpDesc(opClass="FloatSqrt", opLat=6, pipelined=False),
+        OpDesc(opClass="SimdAdd", opLat=6),
+        OpDesc(opClass="SimdAddAcc", opLat=6),
+        OpDesc(opClass="SimdAlu", opLat=6),
+        OpDesc(opClass="SimdCmp", opLat=6),
+        OpDesc(opClass="SimdCvt", opLat=6),
+        OpDesc(opClass="SimdMisc", opLat=6),
+        OpDesc(opClass="SimdMult", opLat=6),
+        OpDesc(opClass="SimdMultAcc", opLat=6),
+        OpDesc(opClass="SimdMatMultAcc", opLat=6),
+        OpDesc(opClass="SimdShift", opLat=6),
+        OpDesc(opClass="SimdShiftAcc", opLat=6),
+        OpDesc(opClass="SimdDiv", opLat=6),
+        OpDesc(opClass="SimdSqrt", opLat=6),
+        OpDesc(opClass="SimdFloatAdd", opLat=6),
+        OpDesc(opClass="SimdFloatAlu", opLat=6),
+        OpDesc(opClass="SimdFloatCmp", opLat=6),
+        OpDesc(opClass="SimdFloatCvt", opLat=6),
+        OpDesc(opClass="SimdFloatDiv", opLat=6),
+        OpDesc(opClass="SimdFloatMisc", opLat=6),
+        OpDesc(opClass="SimdFloatMult", opLat=6),
+        OpDesc(opClass="SimdFloatMultAcc", opLat=6),
+        OpDesc(opClass="SimdFloatMatMultAcc", opLat=6),
+        OpDesc(opClass="SimdFloatSqrt", opLat=6),
+        OpDesc(opClass="SimdReduceAdd", opLat=6),
+        OpDesc(opClass="SimdReduceAlu", opLat=6),
+        OpDesc(opClass="SimdReduceCmp", opLat=6),
+        OpDesc(opClass="SimdFloatReduceAdd", opLat=6),
+        OpDesc(opClass="SimdFloatReduceCmp", opLat=6),
+        OpDesc(opClass="SimdAes", opLat=6),
+        OpDesc(opClass="SimdAesMix", opLat=6),
+        OpDesc(opClass="SimdSha1Hash", opLat=6),
+        OpDesc(opClass="SimdSha1Hash2", opLat=6),
+        OpDesc(opClass="SimdSha256Hash", opLat=6),
+        OpDesc(opClass="SimdSha256Hash2", opLat=6),
+        OpDesc(opClass="SimdShaSigma2", opLat=6),
+        OpDesc(opClass="SimdShaSigma3", opLat=6),
+        OpDesc(opClass="Matrix", opLat=6),
+        OpDesc(opClass="MatrixMov", opLat=6),
+        OpDesc(opClass="MatrixOP", opLat=6),
+    ]
+    count = 1
+
+
+class CustomPredALU(FUDesc):
+    opList = [OpDesc(opClass="SimdPredAlu", opLat=3)]
+    count = 1
+
+
+class CustomRdWrPort(FUDesc):
+    opList = [
+        OpDesc(opClass="MemRead", opLat=1),
+        OpDesc(opClass="MemWrite", opLat=1),
+        OpDesc(opClass="FloatMemRead", opLat=1),
+        OpDesc(opClass="FloatMemWrite", opLat=1),
+    ]
+    count = 1
+
+
+class CustomMiscALU(FUDesc):
+    opList = [
+        OpDesc(opClass="IprAccess", opLat=1, pipelined=False),
+        OpDesc(opClass="InstPrefetch", opLat=1, pipelined=False),
+    ]
+    count = 1
+
+
+class CustomVecALU(FUDesc):
+    opList = [
+        OpDesc(opClass="VectorUnitStrideLoad", opLat=1),
+        OpDesc(opClass="VectorUnitStrideStore", opLat=1),
+        OpDesc(opClass="VectorUnitStrideMaskLoad", opLat=1),
+        OpDesc(opClass="VectorUnitStrideMaskStore", opLat=1),
+        OpDesc(opClass="VectorStridedLoad", opLat=1),
+        OpDesc(opClass="VectorStridedStore", opLat=1),
+        OpDesc(opClass="VectorIndexedLoad", opLat=1),
+        OpDesc(opClass="VectorIndexedStore", opLat=1),
+        OpDesc(opClass="VectorUnitStrideFaultOnlyFirstLoad", opLat=1),
+        OpDesc(opClass="VectorWholeRegisterLoad", opLat=1),
+        OpDesc(opClass="VectorWholeRegisterStore", opLat=1),
+        OpDesc(opClass="VectorIntegerArith", opLat=1),
+        OpDesc(opClass="VectorFloatArith", opLat=1),
+        OpDesc(opClass="VectorFloatConvert", opLat=1),
+        OpDesc(opClass="VectorIntegerReduce", opLat=1),
+        OpDesc(opClass="VectorFloatReduce", opLat=1),
+        OpDesc(opClass="VectorMisc", opLat=1),
+        OpDesc(opClass="VectorIntegerExtension", opLat=1),
+        OpDesc(opClass="VectorConfig", opLat=1),
+    ]
+    count = 1
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7

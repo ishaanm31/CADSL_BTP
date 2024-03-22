@@ -588,9 +588,16 @@ def run(options, root, testsys, cpu_class):
         switch_cpus = [
             TimingSimpleCPU(switched_out=True, cpu_id=(i)) for i in range(np)
         ]
-        switch_cpus_1 = [
-            DerivO3CPU(switched_out=True, cpu_id=(i)) for i in range(np)
-        ]
+        # By default, gem5 switches to O3 CPU as main CPU after warmup and fast forward instructions, modified to switch to X86MinorCPU
+        # Can add more cpu types here
+        if options.cpu_type == "X86MinorCPU":
+            switch_cpus_1 = [
+                X86MinorCPU(switched_out=True, cpu_id=(i)) for i in range(np)
+            ]
+        else:
+            switch_cpus_1 = [
+                DerivO3CPU(switched_out=True, cpu_id=(i)) for i in range(np)
+            ]
 
         for i in range(np):
             switch_cpus[i].system = testsys

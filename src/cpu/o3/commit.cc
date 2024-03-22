@@ -972,15 +972,24 @@ Commit::commitInsts()
             bool commit_success = commitHead(head_inst, num_committed);
 
             if (commit_success) {
+<<<<<<< HEAD
+                // If instruction at head that is committed is a branch instruction;
+                // print its PC, Branch Target Address and Branch Direction
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
                 if (head_inst->isControl())
                 {
                     const PCStateBase &pc = head_inst->pcState();
                     PCStateBase *pcs = pc.clone();
+<<<<<<< HEAD
+                    DPRINTF(BranchOutcomes, "%s: %d\n", *pcs, pc.branching());
+=======
                     auto &xpc = pcs->as<GenericISA::PCStateWithNext>();
                     Addr currentPC = xpc.pc();
                     Addr nextPC = xpc.npc();
                     DPRINTF(BranchOutcomes, "Branch PC info: 0x%lx, Target Address: 0x%lx\n",
                     currentPC, nextPC);
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
                 }
                 ++num_committed;
                 cpu->commitStats[tid]

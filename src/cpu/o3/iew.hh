@@ -156,6 +156,12 @@ class IEW
     /** Sets pointer to the scoreboard. */
     void setScoreboard(Scoreboard *sb_ptr);
 
+<<<<<<< HEAD
+    /** Sets pointer to the ROB. */
+    void setROB(ROB *rob_ptr);
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     /** Perform sanity checks after a drain. */
     void drainSanityCheck() const;
 
@@ -338,6 +344,12 @@ class IEW
     /** Scoreboard pointer. */
     Scoreboard* scoreboard;
 
+<<<<<<< HEAD
+    /** ROB pointer. */
+    ROB* rob;
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
   private:
     /** CPU pointer. */
     CPU *cpu;

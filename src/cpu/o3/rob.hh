@@ -302,6 +302,24 @@ class ROB
      *  in the ROB*/
     InstIt head;
 
+<<<<<<< HEAD
+    /** Single entry in scheduleinstList consists of instruction's PC and its sequence number. 
+     * Sequence number needed since instructions are squashed based on sequence number.
+     * @Todo How to assign sequence numbers in OoO schedule
+    */
+    struct ScheduleInstListEntry
+    {
+        Addr instPC;
+        InstSeqNum seqNum;
+    };
+
+    /** List of all the instructions according to given instruction sequence.
+     * Can be in program order or OoO schedule
+     */
+    std::list<ScheduleInstListEntry> scheduleinstList[MaxThreads];
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
   private:
     /** Iterator used for walking through the list of instructions when
      *  squashing.  Used so that there is persistent state between cycles;
@@ -312,6 +330,14 @@ class ROB
      */
     InstIt squashIt[MaxThreads];
 
+<<<<<<< HEAD
+    typedef typename std::list<ScheduleInstListEntry>::iterator ScheduleInstIt;
+
+    /** Same iterator as squashIt to squash instructions in scheduleinstList*/
+    ScheduleInstIt scheduleinstsquashIt[MaxThreads];
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
   public:
     /** Number of instructions in the ROB. */
     int numInstsInROB;
@@ -326,6 +352,20 @@ class ROB
     /** Is the ROB done squashing. */
     bool doneSquashing[MaxThreads];
 
+<<<<<<< HEAD
+    /** Is the Schedule Instruction List done squashing. */
+    bool doneScheduleInstListSquashing[MaxThreads];
+
+    /** Is the Head of the Schedule Instruction List done squashing. 
+     * This flag is added to squash head of instruction list if it is in the mispredicted path of instructions
+     * and its sequence number is greater than the sequence number of mispredicted branch instruction.
+     * We are squashing head of scheduleinstList in this case and when we are sure top of ready instructions list
+     * is equal to head of scheduleinstList.
+    */
+    bool doneScheduleInstListHeadSquashing[MaxThreads];
+
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     /** Number of active threads. */
     ThreadID numThreads;
 
@@ -339,6 +379,19 @@ class ROB
         // The number of rob_writes
         statistics::Scalar writes;
     } stats;
+<<<<<<< HEAD
+  public:
+    /** Returns a pointer to the head instruction of a specific thread within
+     *  schedule instruction list.
+    */
+    const ScheduleInstListEntry &readHeadInstSchedule(ThreadID tid);
+
+    /** Retires the head instruction of a specific thread, removing it from the
+     *  schedule instruction list.
+     */
+    void retireHeadInstSchedule(ThreadID tid);
+=======
+>>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 };
 
 } // namespace o3
