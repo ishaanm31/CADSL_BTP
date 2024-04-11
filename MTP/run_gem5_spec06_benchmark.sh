@@ -4,7 +4,7 @@ SECONDS=0
 #
 # run_gem5_spec06_benchmark.sh 
  
-while getopts ":b:o:f:w:m:c:-:" flag
+while getopts ":b:o:f:w:m:e:branchoutcomefile:-:" flag
 do
 	case "${flag}" in
 		b) BENCHMARK=${OPTARG};;    # Benchmark name, e.g. bzip2
@@ -12,10 +12,15 @@ do
 		f) fastforwardinsts=${OPTARG};;
 		w) warmupinsts=${OPTARG};;
 		m) maximuminsts=${OPTARG};;
-        c) CPU_TYPE=${OPTARG};;
+        e) execMode=${OPTARG};;
+        branchoutcomefile) branchOutcomeFile=${OPTARG};;
         -)
             case "${OPTARG}" in
-                recordbranchoutcomes) RecordBranchOutcomes=true;;
+                extractBranchOutcomes) extractBranchOutcomes=true;;
+                extractLoadHints) extractLoadHints=true;;
+                extractCommittedInsts) extractCommittedInsts=true;;
+                issueInProgramOrder) issueInProgramOrder=true;;
+                utilizeBranchHints) utilizeBranchHints=true;;
                 *)
                     echo "Invalid option: --${OPTARG}"
                     exit 1
@@ -181,7 +186,12 @@ fi
 ##################################################################
 
 # Create OUTPUT_DIR
-OUTPUT_DIR+="/"$CPU_TYPE
+TRACE_OUTPUT_DIR=$OUTPUT_DIR
+OUTPUT_DIR+="/"$execMode
+if [ -n "$utilizeBranchHints" ]; then
+    OUTPUT_DIR+="withbranchutilization"
+fi
+
 mkdir -p $OUTPUT_DIR || echo "$OUTPUT_DIR already exists!"
 # echo $OUTPUT_DIR
 # Check OUTPUT_DIR existence
@@ -234,50 +244,109 @@ l1iassoc=4
 l1dsize=32kB
 l1dassoc=4
 
-if [[ "$CPU_TYPE" == "OoO" ]]; then
+if [[ "$execMode" == "OoO" ]]; then
     cputype=DerivO3CPU
-elif [[ "$CPU_TYPE" == "OoOasInO" ]]; then
+elif [[ "$execMode" == "OoOasInO" ]]; then
     cputype=DerivO3CPU
-elif [[ "$CPU_TYPE" == "InO" ]]; then
+elif [[ "$execMode" == "InO" ]]; then
     cputype=X86MinorCPU
 else
-    echo "Unsupported CPU Type $CPU_TYPE"
+    echo "Unsupported Execution Mode $execMode"
 fi
 echo $cputype
 # Actually launch gem5!
 if [ -n "$fastforwardinsts" ] && [ -n "$warmupinsts" ]; then
-    echo "Simpoints"
-    $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=BranchOutcomes --debug-file=${BENCHMARK}_branchtrace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --fast-forward $fastforwardinsts --standard-switch $warmupinsts --warmup-insts $warmupinsts --maxinsts $maximuminsts --cpu-type=$cputype --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
+    echo "Running with Simpoints"
+    if [ -n "$utilizeBranchHints" ]; then
+        echo "Utilizing Branch Hints"
+        $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=Trace --debug-file=${BENCHMARK}_trace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --fast-forward $fastforwardinsts --standard-switch $warmupinsts --warmup-insts $warmupinsts --maxinsts $maximuminsts --cpu-type=$cputype --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err --execMode=$execMode --issueInProgramOrder=$issueInProgramOrder --utilizeBranchHints=$utilizeBranchHints --branch_outcome_file=$branchOutcomeFile | tee -a $SCRIPT_OUT
+    else
+        echo "Not Utilizing Branch Hints"
+        $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=Trace --debug-file=${BENCHMARK}_trace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --fast-forward $fastforwardinsts --standard-switch $warmupinsts --warmup-insts $warmupinsts --maxinsts $maximuminsts --cpu-type=$cputype --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err --execMode=$execMode --issueInProgramOrder=$issueInProgramOrder --utilizeBranchHints=$utilizeBranchHints | tee -a $SCRIPT_OUT
+    fi
 else
-    echo "No Simpoints"
-    # $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=BranchOutcomes --debug-file=${BENCHMARK}_branchtrace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximuminsts --cpu-type=DerivO3CPU --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
-    # $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=O3CPUAll --debug-file=${BENCHMARK}_O3CPUAlltraceInOaftersquashing --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximuminsts --cpu-type=DerivO3CPU --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
-    $GEM5_DIR/build/"$ISA"/gem5.opt --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximuminsts --cpu-type=$cputype --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
+    echo "Not Running with Simpoints"
+    # $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=O3CPUAll --debug-file=${BENCHMARK}_O3CPUAlltrace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximuminsts --cpu-type=$cputype --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err --execMode=$execMode --issueInProgramOrder=$issueInProgramOrder --utilizeBranchHints=$utilizeBranchHints --branch_outcome_file=$TRACE_OUTPUT_DIR/${BENCHMARK}_branchoutcomes.txt | tee -a $SCRIPT_OUT
+    if [ -n "$utilizeBranchHints" ]; then
+        echo "Utilizing Branch Hints"
+        $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=Trace --debug-file=${BENCHMARK}_trace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximuminsts --cpu-type=$cputype --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err --execMode=$execMode --issueInProgramOrder=$issueInProgramOrder --utilizeBranchHints=$utilizeBranchHints --branch_outcome_file=$branchOutcomeFile | tee -a $SCRIPT_OUT
+    else
+        echo "Not Utilizing Branch Hints"
+        $GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=Trace --debug-file=${BENCHMARK}_trace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximuminsts --cpu-type=$cputype --cpu-clock $cpuclock --caches --l1i_size $l1isize --l1i_assoc $l1iassoc --l1d_size $l1dsize --l1d_assoc $l1dassoc --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err --execMode=$execMode --issueInProgramOrder=$issueInProgramOrder --utilizeBranchHints=$utilizeBranchHints | tee -a $SCRIPT_OUT
+    fi
 fi
 
-if [ -n "$RecordBranchOutcomes" ]; then
-    echo "Extracting trace"
+if [ -n "$extractBranchOutcomes" ]; then
+    echo "Extracting Branch Outcomes"
     # Output file to store extracted values
-    output_file="$OUTPUT_DIR/${BENCHMARK}_branchoutcomes.txt"
+    
+    output_file="$TRACE_OUTPUT_DIR/${BENCHMARK}_branchoutcomes.txt"
 
     # Ensure the output file is empty initially
     > "$output_file"
 
     # Loop through each line in the input file
-    while IFS= read -r line; do
-        # Use grep and sed to extract the values and store them in variables
-        # branch_pc=$(echo "$line" | grep -o '0x[0-9a-fA-F]\+,' | sed 's/,//')
-        # target_address=$(echo "$line" | grep -o '0x[0-9a-fA-F]\+$')
+    # while IFS= read -r line; do
+    #     # Use grep and sed to extract the values and store them in variables
+    #     # branch_pc=$(echo "$line" | grep -o '0x[0-9a-fA-F]\+,' | sed 's/,//')
+    #     # target_address=$(echo "$line" | grep -o '0x[0-9a-fA-F]\+$')
 
-        branch_pc=$(echo "$line" | awk -F ': ' '{print $3}')
-        target_address=$(echo "$line" | awk -F ': ' '{print $4}')
-        branch_direction=$(echo "$line" | awk -F ': ' '{print $5}')
+    #     branch_pc_pc=$(echo "$line" | awk -F ': ' '{print $3}')
+    #     branch_pc_npc=$(echo "$line" | awk -F ': ' '{print $4}')
+    #     target_address_pc=$(echo "$line" | awk -F ': ' '{print $7}')
+    #     target_address_npc=$(echo "$line" | awk -F ': ' '{print $8}')
+    #     target_address_upc=$(echo "$line" | awk -F ': ' '{print $9}')
+    #     target_address_nupc=$(echo "$line" | awk -F ': ' '{print $10}')
+    #     branch_direction=$(echo "$line" | awk -F ': ' '{print $11}')
 
-        # Append the extracted values to the output file
-        echo "$branch_pc $target_address $branch_direction" >> "$output_file"
-    done < $OUTPUT_DIR/${BENCHMARK}_branchtrace
+    #     # Append the extracted values to the output file
+    #     echo "$branch_pc_pc $branch_pc_npc $target_address_pc $target_address_npc $target_address_upc $target_address_nupc $branch_direction" >> "$output_file"
+    # done < $OUTPUT_DIR/${BENCHMARK}_branchtrace
+
+    # while IFS= read -r line; do
+    #     # Use awk to extract the values and store them in variables
+    #     # Set the field separator to ': ' and then directly print the desired fields
+    #     awk -F ': ' '{ print $3, $4, $7, $8, $9, $10, $11 }' <<< "$line"
+
+    # done < "$OUTPUT_DIR/${BENCHMARK}_trace" >> "$output_file"
+
+    grep 'Branch' "$OUTPUT_DIR/${BENCHMARK}_trace" | while IFS= read -r line; do
+        awk -F ': ' '/Branch/ { print $4, $5, $8, $9, $10, $11, $12 }' <<< "$line"
+    done >> "$output_file"
 else
-    echo "Not Extracting trace"
+    echo "Not Extracting Branch Outcomes"
+fi
+
+if [ -n "$extractLoadHints" ]; then
+    echo "Extracting Load Hints"
+    # Output file to store extracted values
+    
+    output_file="$TRACE_OUTPUT_DIR/${BENCHMARK}_loadhints.txt"
+
+    # Ensure the output file is empty initially
+    > "$output_file"
+
+    grep 'Load' "$OUTPUT_DIR/${BENCHMARK}_trace" | while IFS= read -r line; do
+        awk -F ': ' '/Load/ { print $4, $5, $8, $9, $10, $11, $12 }' <<< "$line"
+    done >> "$output_file"
+else
+    echo "Not Extracting Load Hints"
+fi
+
+if [ -n "$extractCommittedInsts" ]; then
+    echo "Extracting Committed Instructions"
+    # Output file to store extracted values
+    
+    output_file="$OUTPUT_DIR/${BENCHMARK}_committedinsts.txt"
+
+    # Ensure the output file is empty initially
+    > "$output_file"
+
+    grep 'CommitSuccess' "$OUTPUT_DIR/${BENCHMARK}_trace" | while IFS= read -r line; do
+        awk -F ': ' '/CommitSuccess/ { for (i = 5; i <= NF; i++) printf "%s ", $i; print "" }' <<< "$line"
+    done >> "$output_file"
+else
+    echo "Not Extracting Committed Instructions"
 fi
 
 end=$(date +%s)

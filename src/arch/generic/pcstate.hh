@@ -301,7 +301,7 @@ class PCStateWithNext : public PCStateBase
     output(std::ostream &os) const override
     {
         // ccprintf(os, "(%#x=>%#x)", this->pc(), this->npc());
-        ccprintf(os, "%#x: %#x", this->pc(), this->npc());
+        ccprintf(os, "%#x: %#x:", this->pc(), this->npc());
     }
     /**
      * Parse data from the std::istringstream stream is as hexadecimal and set the values of pc and npc
@@ -420,6 +420,7 @@ class UPCState : public SimplePCState<InstWidth>
     {
         Base::output(os);
         // ccprintf(os, ".(%d=>%d)", this->upc(), this->nupc());
+        ccprintf(os, " %#x: %#x", this->upc(), this->nupc());
     }
 
     void
@@ -469,6 +470,17 @@ class UPCState : public SimplePCState<InstWidth>
         this->advance();
         this->upc(0);
         this->nupc(1);
+    }
+
+    // Added function to change the PCState of next instruction(branch target) for a branch instruction
+    void
+    End(Addr branch_target_npc, MicroPC branch_target_upc, MicroPC branch_target_nupc)
+    {
+        // this->advance();
+        this->pc(this->npc());
+        this->npc(branch_target_npc);
+        this->upc(branch_target_upc);
+        this->nupc(branch_target_nupc);
     }
 };
 
@@ -577,6 +589,7 @@ class DelaySlotUPCState : public DelaySlotPCState<InstWidth>
     {
         Base::output(os);
         // ccprintf(os, ".(%d=>%d)", this->upc(), this->nupc());
+        ccprintf(os, " %#x: %#x", this->upc(), this->nupc());
     }
 
     void

@@ -341,12 +341,9 @@ class IEW
     /** Scoreboard pointer. */
     Scoreboard* scoreboard;
 
-<<<<<<< HEAD
     /** ROB pointer. */
     ROB* rob;
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
   private:
     /** CPU pointer. */
     CPU *cpu;
@@ -416,6 +413,9 @@ class IEW
 
     /** Number of active threads. */
     ThreadID numThreads;
+
+    /** Utilize Branch Hints*/
+    bool utilizeBranchHints;
 
     /** Pointer to list of active threads. */
     std::list<ThreadID> *activeThreads;

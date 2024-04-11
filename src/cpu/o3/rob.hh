@@ -52,6 +52,7 @@
 #include "cpu/o3/limits.hh"
 #include "cpu/reg_class.hh"
 #include "enums/SMTQueuePolicy.hh"
+#include "cpu/o3/boq.hh"
 
 namespace gem5
 {
@@ -360,6 +361,14 @@ class ROB
     /** Number of active threads. */
     ThreadID numThreads;
 
+    /** Issue instructions in program order */
+    bool issueInProgramOrder;
+
+    /** Pointer to Branch Outcome Queue*/
+    BOQ* boq;
+
+    /** Utilize Branch Hints*/
+    bool utilizeBranchHints;
 
     struct ROBStats : public statistics::Group
     {
@@ -380,6 +389,9 @@ class ROB
      *  schedule instruction list.
      */
     void retireHeadInstSchedule(ThreadID tid);
+
+    /** Sets pointer to the BOQ. */
+    void setBOQ(BOQ *boq_ptr);
 };
 
 } // namespace o3

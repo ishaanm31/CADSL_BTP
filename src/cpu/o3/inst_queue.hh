@@ -451,6 +451,9 @@ class InstructionQueue
      */
     Cycles commitToIEWDelay;
 
+    /** Issue instructions in program order */
+    bool issueInProgramOrder;
+    
     /** The sequence number of the squashed instruction. */
     InstSeqNum squashedSeqNum[MaxThreads];
 

@@ -48,7 +48,7 @@
 #include "debug/Fetch.hh"
 #include "debug/ROB.hh"
 #include "params/BaseO3CPU.hh"
-#define issue_in_program_order true
+// #define issueInProgramOrder true
 
 namespace gem5
 {
@@ -63,6 +63,8 @@ ROB::ROB(CPU *_cpu, const BaseO3CPUParams &params)
       squashWidth(params.squashWidth),
       numInstsInROB(0),
       numThreads(params.numThreads),
+      issueInProgramOrder(params.issueInProgramOrder),
+      utilizeBranchHints(params.utilizeBranchHints),
       stats(_cpu)
 {
     //Figure out rob policy
@@ -107,7 +109,7 @@ ROB::resetState()
     for (ThreadID tid = 0; tid  < MaxThreads; tid++) {
         threadEntries[tid] = 0;
         squashIt[tid] = instList[tid].end();
-        if(issue_in_program_order) {
+        if(issueInProgramOrder) {
             scheduleinstsquashIt[tid] = scheduleinstList[tid].end();
             doneScheduleInstListSquashing[tid] = true;
             // Below flag is set to true only when we have squashed head of scheduleinstList
@@ -216,7 +218,7 @@ ROB::insertInst(const DynInstPtr &inst)
     instList[tid].push_back(inst);
 
     // Add instruction's PC and its sequence number in scheduleinstList at the same time as ROB
-    if(issue_in_program_order){
+    if(issueInProgramOrder){
         ScheduleInstListEntry scheduleInstListEntry;
         scheduleInstListEntry.instPC = inst->pcState().instAddr();
         scheduleInstListEntry.seqNum = inst->seqNum;
@@ -330,7 +332,7 @@ ROB::doSquash(ThreadID tid)
     assert(squashIt[tid] != instList[tid].end());
 
     // Same logic as squashing in ROB. No extra case handling needed.
-    if(issue_in_program_order && !scheduleinstList[tid].empty()) {
+    if(issueInProgramOrder && !scheduleinstList[tid].empty()) {
         assert(scheduleinstsquashIt[tid] != scheduleinstList[tid].end());
 
         if((scheduleinstsquashIt[tid])->seqNum < squashedSeqNum[tid]) {
@@ -379,7 +381,25 @@ ROB::doSquash(ThreadID tid)
         // it can drain out of the pipeline.
         (*squashIt[tid])->setSquashed();
 
-        if(issue_in_program_order && !scheduleinstList[tid].empty()) {
+        /** Ideally, once a branch outcome entry is read from BOQ, it can be popped from BOQ,
+         * but in gem5, if an instruction has a fault, consecutive instructions are squashed and re-executed
+         * once we return from trap, hence correct-path branch instructions will also be squashed.
+         * Therefore, in below added code, we check if squashed instruction is branch, we decrement the head iterator of BOQ
+         * that points to the branch outcome that must be utilized.
+         * Branch Instruction that is squashed can be in ROB or in initial stages of pipeline.
+         * Squashing of branch instructions in ROB is handled here, hence decrementHead function is called here.
+         * @Todo : Deleting unused entries from BOQ.
+         * 
+        */
+        if(utilizeBranchHints && (*squashIt[tid])->isControl()) {
+            DPRINTF(ROB, "Decrementing BOQ Head Iterator. \n");
+            boq->decrementHead(tid);
+            BOQ::BOQEntry boq_entry = boq->readentryfromBOQ(tid);
+            DPRINTF(ROB, "BOQ entry read PC: %#x Next PC: %#x Target PC: %#x Target Next PC: %#x Branch Direction : %d\n",
+                    boq_entry.inst_pc_pc, boq_entry.inst_pc_npc, boq_entry.branch_target_pc, boq_entry.branch_target_npc, boq_entry.branch_direction);
+        }
+
+        if(issueInProgramOrder && !scheduleinstList[tid].empty()) {
             if (scheduleinstsquashIt[tid] == scheduleinstList[tid].begin()) {
                 DPRINTF(ROB, "Reached head of schedule instruction list while "
                     "squashing.\n");
@@ -428,12 +448,12 @@ ROB::doSquash(ThreadID tid)
             robTailUpdate = true;
 
         squashIt[tid]--;
-        if(issue_in_program_order && !scheduleinstList[tid].empty()) scheduleinstsquashIt[tid]--;
+        if(issueInProgramOrder && !scheduleinstList[tid].empty()) scheduleinstsquashIt[tid]--;
     }
 
 
     // Same logic as squashing in ROB. No extra case handling needed.
-    if(issue_in_program_order && !scheduleinstList[tid].empty()) {
+    if(issueInProgramOrder && !scheduleinstList[tid].empty()) {
         if((scheduleinstsquashIt[tid])->seqNum <= squashedSeqNum[tid]) {
             DPRINTF(ROB, "[tid:%i] Done squashing instructions from schedule instruction list 2.\n",
                 tid);
@@ -555,7 +575,7 @@ ROB::squash(InstSeqNum squash_num, ThreadID tid)
 
     doneSquashing[tid] = false;
 
-    if(issue_in_program_order) {
+    if(issueInProgramOrder) {
         doneScheduleInstListSquashing[tid] = false;
         doneScheduleInstListHeadSquashing[tid] = false;
     }
@@ -568,7 +588,7 @@ ROB::squash(InstSeqNum squash_num, ThreadID tid)
 
         squashIt[tid] = tail_thread;
 
-        if(issue_in_program_order) {
+        if(issueInProgramOrder) {
             if(scheduleinstList[tid].empty())
                 DPRINTF(ROB, "Schedule Instruction List is empty. No need to squash.\n");
             else {
@@ -653,6 +673,12 @@ ROB::retireHeadInstSchedule(ThreadID tid)
             "instruction PC %#x, [sn:%llu]\n", tid, head_inst.instPC,
             head_inst.seqNum);
     scheduleinstList[tid].pop_front();
+}
+
+void
+ROB::setBOQ(BOQ *boq_ptr)
+{
+    boq = boq_ptr;
 }
 
 } // namespace o3

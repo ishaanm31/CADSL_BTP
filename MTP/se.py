@@ -142,6 +142,31 @@ parser.add_argument(
     default="",
     help="Absolute path for stderr redirection for the benchmark."
 )
+parser.add_argument(
+    "--execMode",
+    type=str,
+    default=False,
+    help="Execution Mode.",
+)
+parser.add_argument(
+    "--issueInProgramOrder",
+    type=bool,
+    default=False,
+    help="Issue instructions in program order.",
+)
+parser.add_argument(
+    "--utilizeBranchHints",
+    type=bool,
+    default=False,
+    help="Enable branch hint utilization.",
+)
+# Branch outcome file options
+parser.add_argument(
+    "--branch_outcome_file",
+    type=str,
+    default="",
+    help="File containing Branch instruction PCs, Target Addresses and Branch direction.",
+)
 
 if "--ruby" in sys.argv:
     Ruby.define_options(parser)
@@ -389,10 +414,6 @@ if args.simpoint_profile:
 #         system.cpu[i].branchPred.indirectBranchPred = indirectBPClass()
 
 #     system.cpu[i].createThreads()
-for i in range(np): 
-    system.cpu[i].workload = process
-    system.cpu[i].createThreads()
-    print(process.cmd)
 
 if args.ruby:
     Ruby.create_system(args, False, system)
@@ -418,6 +439,64 @@ else:
     CacheConfig.config_cache(args, system)
     MemConfig.config_mem(args, system)
     config_filesystem(system, args)
+
+for i in range(np): 
+    system.cpu[i].workload = process
+    system.cpu[i].createThreads()
+    print(process.cmd)
+
+    # if args.cpu_type in ["DerivO3CPU"]:
+    if system.cpu[i].type in ["BaseO3CPU"]:
+        system.cpu[i].issueInProgramOrder=args.issueInProgramOrder
+        system.cpu[i].branchOutcomeFile=args.branch_outcome_file
+        system.cpu[i].utilizeBranchHints=args.utilizeBranchHints
+
+        if args.execMode in ["OoO"]:
+            system.cpu[i].fetchWidth=8
+            system.cpu[i].fetchBufferSize=64
+            system.cpu[i].fetchQueueSize=32
+            system.cpu[i].decodeWidth=8
+            system.cpu[i].renameWidth=8
+            system.cpu[i].dispatchWidth=8
+            system.cpu[i].issueWidth=8
+            system.cpu[i].wbWidth=8
+            system.cpu[i].fuPool=DefaultFUPool()
+            system.cpu[i].commitWidth=8
+            system.cpu[i].squashWidth=8
+            system.cpu[i].LQEntries=32
+            system.cpu[i].SQEntries=32
+            system.cpu[i].numPhysIntRegs=256
+            system.cpu[i].numPhysFloatRegs=256
+            system.cpu[i].numIQEntries=64
+            system.cpu[i].numROBEntries=192
+        elif args.execMode in ["OoOasInO"]:
+            system.cpu[i].fetchWidth=2
+            system.cpu[i].fetchBufferSize=64
+            system.cpu[i].fetchQueueSize=2
+            system.cpu[i].decodeWidth=2
+            system.cpu[i].renameWidth=2
+            system.cpu[i].dispatchWidth=2
+            system.cpu[i].issueWidth=2
+            system.cpu[i].wbWidth=2
+            system.cpu[i].fuPool=CustomFUPool()
+            system.cpu[i].commitWidth=2
+            system.cpu[i].squashWidth=2
+            system.cpu[i].LQEntries=7
+            system.cpu[i].SQEntries=7
+            system.cpu[i].numPhysIntRegs=128
+            system.cpu[i].numPhysFloatRegs=128
+            system.cpu[i].numIQEntries=7
+            system.cpu[i].numROBEntries=7
+        else:
+            print('Unsupported Execution Mode for O3CPU')
+
+system.l2.size='256kB'
+system.l2.assoc=8
+system.l2.tag_latency=9
+system.l2.data_latency=9
+system.l2.response_latency=9
+system.l2.mshrs=32
+system.l2.prefetcher=BOPPrefetcher()
 
 system.workload = SEWorkload.init_compatible(process.executable)
 

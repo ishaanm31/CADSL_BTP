@@ -114,6 +114,8 @@ CPU::CPU(const BaseO3CPUParams &params)
       globalSeqNum(1),
       system(params.system),
       lastRunningCycle(curCycle()),
+      boq(params),
+      utilizeBranchHints(params.utilizeBranchHints),
       cpuStats(this)
 {
     fatal_if(FullSystem && params.numThreads > 1,
@@ -146,6 +148,10 @@ CPU::CPU(const BaseO3CPUParams &params)
     // The stages also need their CPU pointer setup.  However this
     // must be done at the upper level CPU because they have pointers
     // to the upper level CPU, and not this CPU.
+
+    // Set up pointer to BOQ
+    fetch.setBOQ(&boq);
+    rob.setBOQ(&boq);
 
     // Set up Pointers to the activeThreads list for each stage
     fetch.setActiveThreads(&activeThreads);
@@ -1238,6 +1244,23 @@ CPU::squashInstIt(const ListIt &instIt, ThreadID tid)
         // Mark it as squashed.
         (*instIt)->setSquashed();
 
+        /** Ideally, once a branch outcome entry is read from BOQ, it can be popped from BOQ,
+         * but in gem5, if an instruction has a fault, consecutive instructions are squashed and re-executed
+         * once we return from trap, hence correct-path branch instructions will also be squashed.
+         * Therefore, in below added code, we check if squashed instruction is branch, we decrement the head iterator of BOQ
+         * that points to the branch outcome that must be utilized.
+         * Branch Instruction that is squashed can be in ROB or in initial stages of pipeline.
+         * Squashing of branch instructions not in ROB is handled here, hence decrementHead function is called here.
+         * 
+        */
+        if(utilizeBranchHints && (*instIt)->isControl()) {
+            DPRINTF(O3CPU, "Decrementing BOQ Head Iterator. \n");
+            boq.decrementHead(tid);
+            BOQ::BOQEntry boq_entry = boq.readentryfromBOQ(tid);
+            DPRINTF(O3CPU, "BOQ entry read PC: %#x Next PC: %#x Target PC: %#x Target Next PC: %#x Branch Direction : %d\n",
+                    boq_entry.inst_pc_pc, boq_entry.inst_pc_npc, boq_entry.branch_target_pc, boq_entry.branch_target_npc, boq_entry.branch_direction);
+        }
+
         // @todo: Formulate a consistent method for deleting
         // instructions from the instruction list
         // Remove the instruction from the list.
@@ -1256,10 +1279,6 @@ CPU::cleanUpRemovedInsts()
                 (*removeList.front())->pcState());
 
         instList.erase(removeList.front());
-<<<<<<< HEAD
-=======
-
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
         removeList.pop();
     }
 

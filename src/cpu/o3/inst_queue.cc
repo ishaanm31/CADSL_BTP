@@ -53,7 +53,7 @@
 #include "params/BaseO3CPU.hh"
 #include "sim/core.hh"
 
-#define issue_in_program_order true
+// #define issueInProgramOrder true
 
 // clang complains about std::set being overloaded with Packet::set if
 // we open up the entire namespace std
@@ -96,6 +96,7 @@ InstructionQueue::InstructionQueue(CPU *cpu_ptr, IEW *iew_ptr,
       numEntries(params.numIQEntries),
       totalWidth(params.issueWidth),
       commitToIEWDelay(params.commitToIEWDelay),
+      issueInProgramOrder(params.issueInProgramOrder),
       iqStats(cpu, totalWidth),
       iqIOStats(cpu)
 {
@@ -742,7 +743,7 @@ InstructionQueue::processFUCompletion(const DynInstPtr &inst, int fu_idx)
 
     ThreadID tid = inst->threadNumber;
 
-    if(issue_in_program_order) {
+    if(issueInProgramOrder) {
         if(rob->scheduleinstList[tid].empty()) {
             DPRINTF(IQ, "Schedule Instruction List is empty. Returning.\n");
             return;
@@ -891,7 +892,7 @@ InstructionQueue::scheduleReadyInsts()
             if (op_latency == Cycles(1)) {
                 DPRINTF(IQ, "Instruction has op_latency = 1.\n");
 
-                if(issue_in_program_order) {
+                if(issueInProgramOrder) {
                     if(rob->scheduleinstList[tid].empty()) {
                         DPRINTF(IQ, "Schedule Instruction List is empty. Breaking.\n");
 

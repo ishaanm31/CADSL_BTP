@@ -198,3 +198,9 @@ class BaseO3CPU(BaseCPU):
         TAGE_SC_L_8KB(), "Branch Predictor"
     )
     needsTSO = Param.Bool(False, "Enable TSO Memory model")
+
+    issueInProgramOrder = Param.Bool(False, "Issue instructions in program order")
+
+    branchOutcomeFile = Param.String("","Branch Outcome File")
+
+    utilizeBranchHints = Param.Bool(False, "Enable branch hint utilization")

@@ -38,6 +38,7 @@ bzip2.executable =  'bzip2'
 #bzip2.cmd = [bzip2.executable] + ['chicken.jpg', '30']
 #bzip2.cmd = [bzip2.executable] + ['liberty.jpg', '30']
 bzip2.cmd = [bzip2.executable] + ['input.program', 'input.combined']
+# bzip2.cmd = [bzip2.executable]
 #bzip2.cmd = [bzip2.executable] + ['text.html', '280']
 #bzip2.cmd = [bzip2.executable] + ['input.combined', '200']
 #bzip2.output = out_dir + 'bzip2.out'
@@ -156,7 +157,7 @@ leslie3d.input = 'leslie3d.in'
 namd = Process() # Update June 7, 2017: This used to be LiveProcess()
 namd.executable = 'namd'
 # TEST CMDS
-namd.cmd = [namd.executable] + ['--input', 'namd.input', '--iterations', '1']
+namd.cmd = [namd.executable] + ['--input', 'namd.input', '--iterations', '38']
 # REF CMDS
 # namd.cmd = [namd.executable] + ['--input', 'namd.input', '--output', 'namd.out', '--iterations', '38']
 # namd.cmd = [namd.executable]
@@ -344,7 +345,8 @@ Xalan.executable = 'Xalan'
 # TEST CMDS
 ######## NOT WORKING ###########
 # Xalan.cmd = [Xalan.executable] + ['-v','/home/piyush/gem5/MTP/spec-x86-cpu-2006/benchspec/CPU2006/483.xalancbmk/data/ref/input/t5.xml','/home/piyush/gem5/MTP/spec-x86-cpu-2006/benchspec/CPU2006/483.xalancbmk/data/ref/input/xalanc.xsl']
-Xalan.cmd = [Xalan.executable] + ['-v','t5.xml','xalanc.xsl']
+# Xalan.cmd = [Xalan.executable] + ['-v','t5.xml','xalanc.xsl']
+Xalan.cmd = [Xalan.executable] + ['t5.xml','xalanc.xsl']
 # REF CMDS
 ######## NOT WORKING ###########
 #xalancbmk.output = out_dir + 'xalancbmk.out'
