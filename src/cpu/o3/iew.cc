@@ -312,7 +312,6 @@ IEW::setScoreboard(Scoreboard *sb_ptr)
     scoreboard = sb_ptr;
 }
 
-<<<<<<< HEAD
 // Add a pointer to ROB in Instruction Queue so that it can be used to read the schedule instructions list
 void
 IEW::setROB(ROB *rob_ptr)
@@ -321,8 +320,6 @@ IEW::setROB(ROB *rob_ptr)
     instQueue.setROB(rob);
 }
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 bool
 IEW::isDrained() const
 {

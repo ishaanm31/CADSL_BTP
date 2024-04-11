@@ -215,11 +215,8 @@ CPU::CPU(const BaseO3CPUParams &params)
 
     rename.setScoreboard(&scoreboard);
     iew.setScoreboard(&scoreboard);
-<<<<<<< HEAD
     // Add a pointer to ROB in IEW Stage so that it can be used to read the schedule instructions list
     iew.setROB(&rob);
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
     // Setup the rename map for whichever stages need it.
     for (ThreadID tid = 0; tid < numThreads; tid++) {

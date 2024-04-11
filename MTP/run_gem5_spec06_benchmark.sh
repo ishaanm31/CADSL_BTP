@@ -1,5 +1,4 @@
 #!/bin/bash
-<<<<<<< HEAD
 start=$(date +%s)
 SECONDS=0
 #
@@ -31,26 +30,6 @@ do
 done
 
 ISA=X86                          # name of ISA (ARM,X86)
-=======
-#
-# run_gem5_spec06_benchmark.sh 
- 
-ARGC=$# # Get number of arguments excluding arg0 (the script itself). Check for help message condition.
-if [[ "$ARGC" != 3 ]]; then # Bad number of arguments.
-    echo "This script runs a single gem5 simulation of a single SPEC CPU2006 benchmark for ARM/X86 ISA."
-    echo ""
-    echo "USAGE: run_gem5_spec06_benchmark.sh <ISA> <BENCHMARK> <OUTPUT_DIR>"
-    echo "EXAMPLE: ./run_gem5_spec06_benchmark.sh X86 bzip2 /FULL/PATH/TO/output_dir"
-    echo ""
-    echo "A single --help help or -h argument will bring this message back."
-    exit
-fi
-
-# Get command line input. We will need to check these.
-ISA=$1                          # name of ISA (ARM,X86)
-BENCHMARK=$2                    # Benchmark name, e.g. bzip2
-OUTPUT_DIR=$3                   # Directory to place run output. Make sure this exists!
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
 ISA_lower=$(echo "$ISA" | tr '[:upper:]' '[:lower:]')
 ############ DIRECTORY VARIABLES: MODIFY ACCORDINGLY #############
@@ -202,14 +181,9 @@ fi
 ##################################################################
 
 # Create OUTPUT_DIR
-<<<<<<< HEAD
 OUTPUT_DIR+="/"$CPU_TYPE
 mkdir -p $OUTPUT_DIR || echo "$OUTPUT_DIR already exists!"
 # echo $OUTPUT_DIR
-=======
-mkdir -p $OUTPUT_DIR || echo "$OUTPUT_DIR already exists!"
-
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 # Check OUTPUT_DIR existence
 if [[ !(-d "$OUTPUT_DIR") ]]; then
     echo "Output directory $OUTPUT_DIR does not exist! Exiting."
@@ -250,7 +224,6 @@ echo "--------- Here goes nothing! Starting gem5! ------------" | tee -a $SCRIPT
 echo "" | tee -a $SCRIPT_OUT
 echo "" | tee -a $SCRIPT_OUT
 
-<<<<<<< HEAD
 # fastforwardinsts=1000000
 # warmupinsts=2000000
 # maximuminsts=1000000
@@ -311,18 +284,3 @@ end=$(date +%s)
 # echo "Elapsed Time: $(($end - $start)) seconds" > $OUTPUT_DIR/time_elapsed
 duration=$SECONDS
 echo "$(($duration / 3600)) hours, $(($duration / 60)) minutes and $(($duration % 60)) seconds" > $OUTPUT_DIR/time_elapsed
-=======
-# maxinsts=1000000
-# fastforwardinsts=10000
-# warmupinsts=20000
-# maximum_insts=100000000
-fastforwardinsts=1000000
-warmupinsts=2000000
-maximum_insts=10000000
-memsize=2GB
-cpuclock=2GHz
-
-# Actually launch gem5!
-# $GEM5_DIR/build/"$ISA"/gem5.opt --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --fast-forward $fastforwardinsts --standard-switch $warmupinsts --warmup-insts $warmupinsts --maxinsts $maximum_insts --cpu-type=DerivO3CPU --cpu-clock $cpuclock --caches --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
-$GEM5_DIR/build/"$ISA"/gem5.opt --debug-flags=BranchOutcomes --debug-file=${BENCHMARK}_branchtrace --outdir=$OUTPUT_DIR $GEM5_DIR/MTP/se.py --maxinsts $maximum_insts --cpu-type=DerivO3CPU --cpu-clock $cpuclock --caches --l2cache --mem-size $memsize --benchmark=$BENCHMARK --benchmark_stdout=$OUTPUT_DIR/$BENCHMARK.out --benchmark_stderr=$OUTPUT_DIR/$BENCHMARK.err | tee -a $SCRIPT_OUT
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7

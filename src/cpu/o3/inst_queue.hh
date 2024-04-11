@@ -60,10 +60,7 @@
 #include "cpu/timebuf.hh"
 #include "enums/SMTQueuePolicy.hh"
 #include "sim/eventq.hh"
-<<<<<<< HEAD
 #include "cpu/o3/rob.hh"
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
 namespace gem5
 {
@@ -81,10 +78,7 @@ namespace o3
 class FUPool;
 class CPU;
 class IEW;
-<<<<<<< HEAD
 class ROB;
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 
 /**
  * A standard instruction queue class.  It holds ready instructions, in
@@ -285,12 +279,9 @@ class InstructionQueue
     /** Debug function to print all instructions. */
     void printInsts();
 
-<<<<<<< HEAD
     /** Sets pointer to the ROB. */
     void setROB(ROB *rob_ptr);
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
   private:
     /** Does the actual squashing. */
     void doSquash(ThreadID tid);
@@ -302,12 +293,9 @@ class InstructionQueue
     /** Pointer to the CPU. */
     CPU *cpu;
 
-<<<<<<< HEAD
     /** Pointer to the ROB. */
     ROB *rob;
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     /** Cache interface. */
     memory::MemInterface *dcacheInterface;
 

@@ -135,8 +135,4 @@ X86MicroopBase::branchTarget(const PCStateBase &branch_pc) const
 }
 
 } // namespace X86ISA
-<<<<<<< HEAD
 } // namespace gem5
-=======
-} // namespace gem5
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7

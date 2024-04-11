@@ -139,7 +139,6 @@ class RdWrPort(FUDesc):
 class IprPort(FUDesc):
     opList = [OpDesc(opClass="IprAccess", opLat=3, pipelined=False)]
     count = 1
-<<<<<<< HEAD
 
 
 # Added custom FUs with count and latency same as MinorCPU model
@@ -257,5 +256,3 @@ class CustomVecALU(FUDesc):
         OpDesc(opClass="VectorConfig", opLat=1),
     ]
     count = 1
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7

@@ -41,10 +41,7 @@ if not env['CONF']['USE_NULL_ISA']:
     Source('decode.cc')
     Source('dyn_inst.cc')
     Source('fetch.cc')
-<<<<<<< HEAD
     Source('boqunit.cc')
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     Source('free_list.cc')
     Source('fu_pool.cc')
     Source('iew.cc')

@@ -53,11 +53,8 @@
 #include "params/BaseO3CPU.hh"
 #include "sim/core.hh"
 
-<<<<<<< HEAD
 #define issue_in_program_order true
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 // clang complains about std::set being overloaded with Packet::set if
 // we open up the entire namespace std
 using std::list;
@@ -743,7 +740,6 @@ InstructionQueue::processFUCompletion(const DynInstPtr &inst, int fu_idx)
     if (fu_idx > -1)
         fuPool->freeUnitNextCycle(fu_idx);
 
-<<<<<<< HEAD
     ThreadID tid = inst->threadNumber;
 
     if(issue_in_program_order) {
@@ -785,8 +781,6 @@ InstructionQueue::processFUCompletion(const DynInstPtr &inst, int fu_idx)
         }
     }
     
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     // @todo: Ensure that these FU Completions happen at the beginning
     // of a cycle, otherwise they could add too many instructions to
     // the queue.
@@ -794,15 +788,12 @@ InstructionQueue::processFUCompletion(const DynInstPtr &inst, int fu_idx)
     instsToExecute.push_back(inst);
 }
 
-<<<<<<< HEAD
 void
 InstructionQueue::setROB(ROB *rob_ptr)
 {
     rob = rob_ptr;
 }
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 // @todo: Figure out a better way to remove the squashed items from the
 // lists.  Checking the top item of each list to see if it's squashed
 // wastes time and forces jumps.
@@ -843,15 +834,12 @@ InstructionQueue::scheduleReadyInsts()
 
         DynInstPtr issuing_inst = readyInsts[op_class].top();
 
-<<<<<<< HEAD
         DPRINTF(IQ, "PC of Instruction %s, [sn:%llu] [opclass:%d]"
                 "at the top of the ready instructions list.\n",
             (issuing_inst->pcState()),
             (issuing_inst->seqNum),
             op_class);
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
         if (issuing_inst->isFloating()) {
             iqIOStats.fpInstQueueReads++;
         } else if (issuing_inst->isVector()) {
@@ -901,7 +889,6 @@ InstructionQueue::scheduleReadyInsts()
         // valid FU, then schedule for execution.
         if (idx != FUPool::NoFreeFU) {
             if (op_latency == Cycles(1)) {
-<<<<<<< HEAD
                 DPRINTF(IQ, "Instruction has op_latency = 1.\n");
 
                 if(issue_in_program_order) {
@@ -946,8 +933,6 @@ InstructionQueue::scheduleReadyInsts()
                         break;
                     }
                 }
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
                 i2e_info->size++;
                 instsToExecute.push_back(issuing_inst);
 
@@ -956,10 +941,7 @@ InstructionQueue::scheduleReadyInsts()
                 if (idx >= 0)
                     fuPool->freeUnitNextCycle(idx);
             } else {
-<<<<<<< HEAD
                 DPRINTF(IQ, "Instruction needs pipelined ALU.\n");
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
                 bool pipelined = fuPool->isPipelined(op_class);
                 // Generate completion event for the FU
                 ++wbOutstanding;
@@ -1016,10 +998,7 @@ InstructionQueue::scheduleReadyInsts()
             listOrder.erase(order_it++);
             iqStats.statIssuedInstType[tid][op_class]++;
         } else {
-<<<<<<< HEAD
             DPRINTF(IQ, "FU Busy.\n");
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
             iqStats.statFuBusy[op_class]++;
             iqStats.fuBusy[tid]++;
             ++order_it;

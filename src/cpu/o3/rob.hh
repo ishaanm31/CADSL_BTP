@@ -302,7 +302,6 @@ class ROB
      *  in the ROB*/
     InstIt head;
 
-<<<<<<< HEAD
     /** Single entry in scheduleinstList consists of instruction's PC and its sequence number. 
      * Sequence number needed since instructions are squashed based on sequence number.
      * @Todo How to assign sequence numbers in OoO schedule
@@ -318,8 +317,6 @@ class ROB
      */
     std::list<ScheduleInstListEntry> scheduleinstList[MaxThreads];
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
   private:
     /** Iterator used for walking through the list of instructions when
      *  squashing.  Used so that there is persistent state between cycles;
@@ -330,14 +327,11 @@ class ROB
      */
     InstIt squashIt[MaxThreads];
 
-<<<<<<< HEAD
     typedef typename std::list<ScheduleInstListEntry>::iterator ScheduleInstIt;
 
     /** Same iterator as squashIt to squash instructions in scheduleinstList*/
     ScheduleInstIt scheduleinstsquashIt[MaxThreads];
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
   public:
     /** Number of instructions in the ROB. */
     int numInstsInROB;
@@ -352,7 +346,6 @@ class ROB
     /** Is the ROB done squashing. */
     bool doneSquashing[MaxThreads];
 
-<<<<<<< HEAD
     /** Is the Schedule Instruction List done squashing. */
     bool doneScheduleInstListSquashing[MaxThreads];
 
@@ -364,8 +357,6 @@ class ROB
     */
     bool doneScheduleInstListHeadSquashing[MaxThreads];
 
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
     /** Number of active threads. */
     ThreadID numThreads;
 
@@ -379,7 +370,6 @@ class ROB
         // The number of rob_writes
         statistics::Scalar writes;
     } stats;
-<<<<<<< HEAD
   public:
     /** Returns a pointer to the head instruction of a specific thread within
      *  schedule instruction list.
@@ -390,8 +380,6 @@ class ROB
      *  schedule instruction list.
      */
     void retireHeadInstSchedule(ThreadID tid);
-=======
->>>>>>> b8004e44e386a20a86347fdcf3c810187e4ac9c7
 };
 
 } // namespace o3
