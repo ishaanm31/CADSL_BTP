@@ -325,7 +325,6 @@ bool
 IEW::isDrained() const
 {
     bool drained = ldstQueue.isDrained() && instQueue.isDrained();
-
     for (ThreadID tid = 0; tid < numThreads; tid++) {
         if (!insts[tid].empty()) {
             DPRINTF(Drain, "%i: Insts not empty.\n", tid);
@@ -1270,13 +1269,13 @@ IEW::executeInsts()
                             "Predicted target was PC: %s\n",
                             tid, inst->seqNum, inst->returnNextPC(), inst->readPredTarg());
             }
-                        
+
             /** Ideally, we should face zero mispredictions since we are following correct path,
              * but in case of faults, sometimes nextPC is not set properly, and inst->mispredicted()
              * function returns true (verified with the help of trace). Therefore, we can comment squashDueToBranch
-             * function safely without any effects 
+             * function safely without any effects
              * (can be verified by comparing committed instructions trace with unmodified base OoO execution)
-             * 
+             *
             */
             if (inst->mispredicted() && !loadNotExecuted) {
                 // No need to redirect if branch hints are used
@@ -1389,7 +1388,11 @@ IEW::writebackInsts()
         // Notify potential listeners that execution is complete for this
         // instruction.
         ppToCommit->notify(inst);
-
+        my_schedule_trace.instruction_commit(inst);
+        if (count++ == 500000){
+            my_schedule_trace.print_stats();
+            count = 0;
+        }
         // Some instructions will be sent to commit without having
         // executed because they need commit to handle them.
         // E.g. Strictly ordered loads have not actually executed when they
@@ -1596,9 +1599,9 @@ IEW::checkMisprediction(const DynInstPtr& inst)
         /** Ideally, we should face zero mispredictions since we are following correct path,
          * but in case of faults, sometimes nextPC is not set properly, and inst->mispredicted()
          * function returns true (verified with the help of trace). Therefore, we can comment squashDueToBranch
-         * function safely without any effects 
+         * function safely without any effects
          * (can be verified by comparing committed instructions trace with unmodified base OoO execution)
-         * 
+         *
         */
         if (inst->mispredicted()) {
             // No need to redirect if branch hints are used

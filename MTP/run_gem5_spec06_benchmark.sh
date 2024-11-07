@@ -2,25 +2,37 @@
 start=$(date +%s)
 SECONDS=0
 #
-# run_gem5_spec06_benchmark.sh 
- 
-while getopts ":b:o:f:w:m:e:branchoutcomefile:-:" flag
-do
-	case "${flag}" in
-		b) BENCHMARK=${OPTARG};;    # Benchmark name, e.g. bzip2
-		o) OUTPUT_DIR=${OPTARG};;   # Directory to place run output. Make sure this exists!
-		f) fastforwardinsts=${OPTARG};;
-		w) warmupinsts=${OPTARG};;
-		m) maximuminsts=${OPTARG};;
+# run_gem5_spec06_benchmark.sh
+
+# Process options
+while getopts ":b:o:f:w:m:e:-:" flag; do
+    case "${flag}" in
+        b) BENCHMARK=${OPTARG};;      # Benchmark name, e.g., astar
+        o) OUTPUT_DIR=${OPTARG};;     # Output directory
+        f) fastforwardinsts=${OPTARG};;
+        w) warmupinsts=${OPTARG};;
+        m) maximuminsts=${OPTARG};;
         e) execMode=${OPTARG};;
-        branchoutcomefile) branchOutcomeFile=${OPTARG};;
-        -)
+        -) # Long options
             case "${OPTARG}" in
-                extractBranchOutcomes) extractBranchOutcomes=true;;
-                extractLoadHints) extractLoadHints=true;;
-                extractCommittedInsts) extractCommittedInsts=true;;
-                issueInProgramOrder) issueInProgramOrder=true;;
-                utilizeBranchHints) utilizeBranchHints=true;;
+                branchoutcomefile)
+                    branchOutcomeFile="${!OPTIND}"; OPTIND=$((OPTIND + 1))
+                    ;;
+                utilizeBranchHints)
+                    utilizeBranchHints=true
+                    ;;
+                extractBranchOutcomes)
+                    extractBranchOutcomes=true
+                    ;;
+                extractLoadHints)
+                    extractLoadHints=true
+                    ;;
+                extractCommittedInsts)
+                    extractCommittedInsts=true
+                    ;;
+                issueInProgramOrder)
+                    issueInProgramOrder=true
+                    ;;
                 *)
                     echo "Invalid option: --${OPTARG}"
                     exit 1
@@ -31,15 +43,15 @@ do
             echo "Invalid option: -${flag}"
             exit 1
             ;;
-	esac
+    esac
 done
 
 ISA=X86                          # name of ISA (ARM,X86)
 
 ISA_lower=$(echo "$ISA" | tr '[:upper:]' '[:lower:]')
 ############ DIRECTORY VARIABLES: MODIFY ACCORDINGLY #############
-GEM5_DIR=/home/piyush/gem5                          # Install location of gem5
-SPEC_DIR=/home/piyush/gem5/MTP/spec-"$ISA_lower"-cpu-2006                 # Install location of your SPEC2006 benchmarks
+GEM5_DIR=/home/ishaan/distrobox_ubuntu22/CADSL_Ishaan_Gem5_Fault_Tolerance   # Install location of gem5
+SPEC_DIR=/home/ishaan/distrobox_ubuntu22/Benchmark/EE_748               # Install location of your SPEC2006 benchmarks
 ##################################################################
 
 ######################### BENCHMARK CODENAMES ####################
@@ -75,11 +87,11 @@ XALANCBMK_CODE=483.xalancbmk
 SPECRAND_INT_CODE=998.specrand
 SPECRAND_FLOAT_CODE=999.specrand
 ##################################################################
- 
+
 # Check BENCHMARK input
 #################### BENCHMARK CODE MAPPING ######################
 BENCHMARK_CODE="none"
- 
+
 if [[ "$BENCHMARK" == "perlbench" ]]; then
     BENCHMARK_CODE=$PERLBENCH_CODE
 fi
@@ -176,7 +188,7 @@ fi
 if [[ "$BENCHMARK" == "hello" ]]; then
     BENCHMARK_CODE=hello
 fi
- 
+
 # Sanity check
 if [[ "$BENCHMARK_CODE" == "none" ]]; then
     echo "Input benchmark selection $BENCHMARK did not match any known SPEC CPU2006 benchmarks! Exiting."
@@ -208,9 +220,9 @@ else
     echo "ISA $ISA not supported for now"
 fi
 SCRIPT_OUT=$OUTPUT_DIR/runscript.log                                                                    # File log for this script's stdout henceforth
- 
+
 ################## REPORT SCRIPT CONFIGURATION ###################
- 
+
 echo "Command line:"                                | tee $SCRIPT_OUT
 echo "$0 $*"                                        | tee -a $SCRIPT_OUT
 echo "================= Hardcoded directories ==================" | tee -a $SCRIPT_OUT
@@ -221,13 +233,13 @@ echo "BENCHMARK:                                    $BENCHMARK" | tee -a $SCRIPT
 echo "OUTPUT_DIR:                                   $OUTPUT_DIR" | tee -a $SCRIPT_OUT
 echo "==========================================================" | tee -a $SCRIPT_OUT
 ##################################################################
- 
- 
+
+
 #################### LAUNCH GEM5 SIMULATION ######################
 echo ""
 echo "Changing to SPEC benchmark runtime directory: $RUN_DIR" | tee -a $SCRIPT_OUT
 cd $RUN_DIR
- 
+
 echo "" | tee -a $SCRIPT_OUT
 echo "" | tee -a $SCRIPT_OUT
 echo "--------- Here goes nothing! Starting gem5! ------------" | tee -a $SCRIPT_OUT
@@ -279,7 +291,7 @@ fi
 if [ -n "$extractBranchOutcomes" ]; then
     echo "Extracting Branch Outcomes"
     # Output file to store extracted values
-    
+
     output_file="$TRACE_OUTPUT_DIR/${BENCHMARK}_branchoutcomes.txt"
 
     # Ensure the output file is empty initially
@@ -320,7 +332,7 @@ fi
 if [ -n "$extractLoadHints" ]; then
     echo "Extracting Load Hints"
     # Output file to store extracted values
-    
+
     output_file="$TRACE_OUTPUT_DIR/${BENCHMARK}_loadhints.txt"
 
     # Ensure the output file is empty initially
@@ -336,7 +348,7 @@ fi
 if [ -n "$extractCommittedInsts" ]; then
     echo "Extracting Committed Instructions"
     # Output file to store extracted values
-    
+
     output_file="$OUTPUT_DIR/${BENCHMARK}_committedinsts.txt"
 
     # Ensure the output file is empty initially
